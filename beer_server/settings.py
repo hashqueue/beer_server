@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'drf_yasg',
 
     'user.apps.UserConfig',
+    'project.apps.ProjectConfig',
 ]
 
 REST_FRAMEWORK = {
@@ -60,16 +61,16 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     # 在全局指定分页的引擎
-    'DEFAULT_PAGINATION_CLASS': 'utils.my_page_number_pagination.MyPageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS': 'utils.drf_utils.my_page_number_pagination.MyPageNumberPagination',
     # 同时必须指定每页显示的条数
     'PAGE_SIZE': 10,
     # 全局配置自定义异常
-    'EXCEPTION_HANDLER': 'utils.custom_exception.custom_exception_handler',
+    'EXCEPTION_HANDLER': 'utils.drf_utils.custom_exception.custom_exception_handler',
 }
 
 AUTHENTICATION_BACKENDS = [
     # 自定义用户认证后端
-    'utils.custom_user_authentication_backend.MyCustomUserAuthBackend',
+    'utils.django_utils.custom_user_authentication_backend.MyCustomUserAuthBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
@@ -82,7 +83,7 @@ SWAGGER_SETTINGS = {
             'in': 'header'
         }
     },
-    "DEFAULT_AUTO_SCHEMA_CLASS": "utils.custom_swagger_auto_schema.CustomAutoSchema"
+    "DEFAULT_AUTO_SCHEMA_CLASS": "utils.drf_utils.custom_swagger_auto_schema.CustomAutoSchema"
 }
 
 # djangorestframework-simplejwt配置

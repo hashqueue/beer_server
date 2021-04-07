@@ -2,7 +2,7 @@ from rest_framework import permissions, status
 from rest_framework.generics import RetrieveUpdateAPIView, CreateAPIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from utils.custom_json_response import JsonResponse
+from utils.drf_utils.custom_json_response import JsonResponse
 from .serializers import CurrentUserInfoSerializer, UserRegisterSerializer, MyTokenObtainPairSerializer
 from .models import User
 
