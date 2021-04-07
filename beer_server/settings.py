@@ -53,6 +53,7 @@ INSTALLED_APPS = [
 
     'user.apps.UserConfig',
     'project.apps.ProjectConfig',
+    'testsuite.apps.TestsuiteConfig',
 ]
 
 REST_FRAMEWORK = {
