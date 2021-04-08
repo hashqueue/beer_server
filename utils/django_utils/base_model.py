@@ -22,4 +22,3 @@ class BaseModel(models.Model):
         # 设置当前模型类为抽象类，用于其他模型类来继承，数据库迁移时不会创建当前模型类的表
         abstract = True
         verbose_name = '公共字段表'
-        db_table = 'BaseModel'
