@@ -38,7 +38,7 @@ ALLOWED_HOSTS = ["*"]
 AUTH_USER_MODEL = 'user.User'
 
 INSTALLED_APPS = [
-    'simpleui',
+    'grappelli',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -55,7 +55,6 @@ INSTALLED_APPS = [
     'project.apps.ProjectConfig',
     'testsuite.apps.TestsuiteConfig',
     'testcase.apps.TestcaseConfig',
-    'teststep.apps.TeststepConfig'
 ]
 
 REST_FRAMEWORK = {
@@ -100,7 +99,7 @@ SIMPLE_JWT = {
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    # 配置允许库跨域请求
+    # 配置允许跨域请求
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -193,13 +192,3 @@ STATIC_URL = '/static/'
 # 配置图片文件上传的存储路径
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'media')
 MEDIA_URL = '/media/'
-
-# simpleui首页配置
-SIMPLEUI_HOME_PAGE = 'https://opgg.gitee.io/cs-notes/#/'
-# 设置simpleui 点击首页图标跳转的地址
-SIMPLEUI_INDEX = 'https://www.baidu.com/'
-# 配置django-simpleui收集静态文件的路径
-# STATIC_ROOT = os.path.join(BASE_DIR, "static")
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
