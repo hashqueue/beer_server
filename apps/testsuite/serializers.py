@@ -11,6 +11,5 @@ from .models import TestSuite
 class TestSuiteSerializer(BaseModelSerializer):
     class Meta:
         model = TestSuite
-        exclude = ('deleted', )
+        exclude = ('deleted',)
         read_only_fields = ('creator', 'modifier')
-

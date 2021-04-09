@@ -2,6 +2,7 @@ from rest_framework import permissions
 
 from .serializers import TestSuiteSerializer
 from .models import TestSuite
+from .signals import update_testcase_to_deleted_signal
 from utils.drf_utils.custom_model_view_set import CustomModelViewSet
 
 
@@ -22,3 +23,5 @@ class TestSuitesViewSet(CustomModelViewSet):
     def perform_destroy(self, instance):
         instance.deleted = True
         instance.save()
+        # 删除套件后，通过信号机制设置该套件下关联的数据的状态为已删除：deleted=True
+        update_testcase_to_deleted_signal.send(sender=TestSuite, testsuite_instance=instance)

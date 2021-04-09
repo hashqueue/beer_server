@@ -11,6 +11,5 @@ from .models import Project
 class ProjectSerializer(BaseModelSerializer):
     class Meta:
         model = Project
-        exclude = ('deleted', )
+        exclude = ('deleted',)
         read_only_fields = ('creator', 'modifier')
-

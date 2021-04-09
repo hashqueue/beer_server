@@ -12,7 +12,7 @@ class TestSuite(BaseModel):
 
     class Meta:
         db_table = 'testsuite_info'
-        verbose_name = '套件'
+        verbose_name = '测试套件'
         verbose_name_plural = verbose_name
 
     def __str__(self):

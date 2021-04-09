@@ -23,5 +23,5 @@ class ProjectsViewSet(CustomModelViewSet):
     def perform_destroy(self, instance):
         instance.deleted = True
         instance.save()
-        # 删除项目后，通过信号机制设置该项目下关联的测试套件的状态为已删除：deleted=True
+        # 删除项目后，通过信号机制设置该项目下关联的数据的状态为已删除：deleted=True
         update_testsuite_to_deleted_signal.send(sender=Project, project_instance=instance)
