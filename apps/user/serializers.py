@@ -94,13 +94,13 @@ class CurrentUserInfoSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         if validated_data.get('password'):
-            super().update(instance, validated_data)
-            instance.set_password(validated_data['password'])
-            instance.save()
-            return instance
+            userinfo_instance = super().update(instance, validated_data)
+            userinfo_instance.set_password(validated_data['password'])
+            userinfo_instance.save()
+            return userinfo_instance
         else:
-            super().update(instance, validated_data)
-            return instance
+            userinfo_instance = super().update(instance, validated_data)
+            return userinfo_instance
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
@@ -163,9 +163,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # 移除数据库模型类中不存在的字段
         validated_data.pop('password_confirm')
-        instance = super().create(validated_data)
-        instance.set_password(validated_data['password'])
-        instance.save()
+        instance = User.objects.create_user(**validated_data)
         return instance
 
 

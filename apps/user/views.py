@@ -80,7 +80,7 @@ class UserRegisterView(CreateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-        return JsonResponse(data=serializer.data, msg='注册成功,请登录', code=20000, status=status.HTTP_201_CREATED,
+        return JsonResponse(data=serializer.data, msg='注册成功', code=20000, status=status.HTTP_201_CREATED,
                             headers=headers)
 
     def post(self, request, *args, **kwargs):
