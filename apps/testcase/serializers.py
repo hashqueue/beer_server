@@ -38,3 +38,11 @@ class TestCaseSerializer(BaseModelSerializer, WritableNestedModelSerializer):
         model = TestCase
         exclude = ('deleted',)
         read_only_fields = ('creator', 'modifier')
+
+
+class RunTestCaseSerializer(BaseModelSerializer, WritableNestedModelSerializer):
+
+    class Meta:
+        model = TestCase
+        exclude = ('deleted',)
+        read_only_fields = ('creator', 'modifier', 'testcase_name', 'testcase_desc', 'testsuite')

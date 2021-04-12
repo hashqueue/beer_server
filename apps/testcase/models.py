@@ -53,15 +53,14 @@ class TestStepParams(models.Model):
         ('params', '查询字符串参数'),
         ('data', 'body中的form类型参数'),
         ('headers', '请求头参数'),
-        ('cookies', 'cookie'),
-        ('jmespath_expression', 'jmespath表达式')
+        ('cookies', 'cookie')
     ]
-    var_key = models.CharField(max_length=128, blank=True, verbose_name='参数的key', help_text='参数的key')
-    var_value = models.TextField(blank=True, verbose_name='参数的value(参数值/jmespath表达式)',
-                                 help_text='参数的value(参数值/jmespath表达式)')
-    var_key_type = models.CharField(blank=True, max_length=25, choices=VAR_KEY_TYPE_CHOICES, verbose_name='参数类型',
-                                    help_text='参数类型')
-    desc = models.CharField(max_length=512, blank=True, verbose_name='参数描述', help_text='参数描述')
+    var_key = models.CharField(max_length=128, blank=True, verbose_name='请求参数的key', help_text='请求参数的key')
+    var_value = models.TextField(blank=True, verbose_name='请求参数的value(参数值/jmespath表达式)',
+                                 help_text='请求参数的value(参数值/jmespath表达式)')
+    var_key_type = models.CharField(blank=True, max_length=25, choices=VAR_KEY_TYPE_CHOICES, verbose_name='请求参数类型',
+                                    help_text='请求参数类型')
+    desc = models.CharField(max_length=512, blank=True, verbose_name='请求参数描述', help_text='请求参数描述')
     teststep = models.ForeignKey(to=TestStep, null=True, on_delete=models.SET_NULL, related_name='step_params',
                                  verbose_name='所属测试步骤',
                                  help_text='所属测试步骤')
@@ -69,6 +68,28 @@ class TestStepParams(models.Model):
     class Meta:
         db_table = 'param_info'
         verbose_name = '测试步骤的参数'
+        verbose_name_plural = verbose_name
+
+
+class TestStepVariable(models.Model):
+    UNIQUE_VAR_KEY_TYPE_CHOICES = [
+        ('export', '测试用例导出变量'),
+        ('extract', '测试用例提取变量')
+    ]
+    unique_var_key = models.CharField(max_length=128, blank=True, unique=True, verbose_name='变量的key',
+                                      help_text='变量的key')
+    var_value = models.TextField(blank=True, verbose_name='变量的value(jmespath表达式)',
+                                 help_text='变量的value(jmespath表达式)')
+    var_key_type = models.CharField(blank=True, max_length=25, choices=UNIQUE_VAR_KEY_TYPE_CHOICES, verbose_name='变量类型',
+                                    help_text='变量类型')
+    desc = models.CharField(max_length=512, blank=True, verbose_name='变量描述', help_text='变量描述')
+    teststep = models.ForeignKey(to=TestStep, null=True, on_delete=models.SET_NULL, related_name='step_variables',
+                                 verbose_name='所属测试步骤',
+                                 help_text='所属测试步骤')
+
+    class Meta:
+        db_table = 'variable_info'
+        verbose_name = '测试步骤的变量(导出/提取变量)'
         verbose_name_plural = verbose_name
 
 
