@@ -13,13 +13,13 @@ from .models import TestCase, TestStep, TestStepParams, TestStepValidator
 class TestStepParamsSerializer(serializers.ModelSerializer):
     class Meta:
         model = TestStepParams
-        exclude = ('teststep',)
+        fields = '__all__'
 
 
 class TestStepValidatorSerializer(serializers.ModelSerializer):
     class Meta:
         model = TestStepValidator
-        exclude = ('teststep',)
+        fields = '__all__'
 
 
 class TestStepSerializer(WritableNestedModelSerializer):
@@ -28,7 +28,7 @@ class TestStepSerializer(WritableNestedModelSerializer):
 
     class Meta:
         model = TestStep
-        exclude = ('testcase',)
+        fields = '__all__'
 
 
 class TestCaseSerializer(BaseModelSerializer, WritableNestedModelSerializer):
