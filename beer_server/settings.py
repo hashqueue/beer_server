@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     'project.apps.ProjectConfig',
     'testsuite.apps.TestsuiteConfig',
     'testcase.apps.TestcaseConfig',
-    'config.apps.ConfigConfig',
+    # 'config.apps.ConfigConfig',
 ]
 
 REST_FRAMEWORK = {
@@ -146,7 +146,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'HOST': '127.0.0.1',
         'PORT': '3306',
-        'NAME': 'ninja',
+        'NAME': 'beer',
         'USER': 'root',
         'PASSWORD': '123123'
     }

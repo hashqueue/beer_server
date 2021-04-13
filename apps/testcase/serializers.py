@@ -7,28 +7,21 @@
 from rest_framework import serializers
 from drf_writable_nested.serializers import WritableNestedModelSerializer
 from utils.drf_utils.base_model_serializer import BaseModelSerializer
-from .models import TestCase, TestStep, TestStepParams, TestStepValidator
-
-
-class TestStepParamsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TestStepParams
-        fields = '__all__'
+from .models import TestCase, TestStep, TestStepValidator
 
 
 class TestStepValidatorSerializer(serializers.ModelSerializer):
     class Meta:
         model = TestStepValidator
-        fields = '__all__'
+        exclude = ('teststep',)
 
 
 class TestStepSerializer(WritableNestedModelSerializer):
-    step_params = TestStepParamsSerializer(many=True, allow_null=True)
     step_validators = TestStepValidatorSerializer(many=True, allow_null=True)
 
     class Meta:
         model = TestStep
-        fields = '__all__'
+        exclude = ('testcase',)
 
 
 class TestCaseSerializer(BaseModelSerializer, WritableNestedModelSerializer):

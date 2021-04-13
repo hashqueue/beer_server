@@ -2,6 +2,7 @@
 ### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/
+00*.py
 .idea
 *.py[cod]
 *$py.class
