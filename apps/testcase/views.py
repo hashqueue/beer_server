@@ -5,7 +5,7 @@ from utils.drf_utils.custom_json_response import JsonResponse
 from .serializers import TestCaseSerializer, RunTestCaseSerializer
 from .models import TestCase, TestStep
 from utils.drf_utils.custom_model_view_set import CustomModelViewSet
-from utils.http_utils.http_request import HttpSession
+from utils.http_utils.http_request import send_request
 
 
 # Create your views here.
@@ -29,14 +29,14 @@ class TestCasesViewSet(CustomModelViewSet):
     @action(methods=['post'], detail=True)
     def run(self, request, pk=None):
         teststep_objs = TestStep.objects.filter(testcase_id=pk)
-        data = {}
+        data = []
         for teststep in teststep_objs:
             if '$' in teststep.url_path:
                 # 设置了全局base_url
                 pass
             else:
-                resp = HttpSession.request(teststep.method, url=teststep.url_path)
-                data.update(resp)
+                resp = send_request(teststep)
+                data.append({teststep.id: resp})
         return JsonResponse(data=data, code=20000, msg='运行成功')
 
     def get_serializer_class(self):
