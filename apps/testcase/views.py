@@ -11,7 +11,7 @@ from utils.http_utils.http_request import send_request
 # Create your views here.
 
 class TestCasesViewSet(CustomModelViewSet):
-    queryset = TestCase.objects.filter(deleted=False).order_by('-id')
+    queryset = TestCase.objects.all().order_by('-id')
     serializer_class = TestCaseSerializer
     permission_classes = [permissions.IsAuthenticated]
     my_api_set_tags = ["用例管理"]
@@ -21,10 +21,6 @@ class TestCasesViewSet(CustomModelViewSet):
 
     def perform_update(self, serializer):
         serializer.save(modifier=self.request.user.username)
-
-    def perform_destroy(self, instance):
-        instance.deleted = True
-        instance.save()
 
     @action(methods=['post'], detail=True)
     def run(self, request, pk=None):

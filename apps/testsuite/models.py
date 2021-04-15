@@ -7,8 +7,8 @@ from project.models import Project
 
 class TestSuite(BaseModel):
     testsuite_name = models.CharField(max_length=150, verbose_name='套件名称', help_text='套件名称')
-    testsuite_desc = models.CharField(max_length=256, blank=True, verbose_name='套件描述', help_text='套件描述')
-    project = models.ForeignKey(to=Project, null=True, on_delete=models.SET_NULL, verbose_name='所属项目', help_text='所属项目')
+    testsuite_desc = models.CharField(max_length=256, blank=True, default='', verbose_name='套件描述', help_text='套件描述')
+    project = models.ForeignKey(to=Project, on_delete=models.CASCADE, verbose_name='所属项目', help_text='所属项目')
 
     class Meta:
         db_table = 'testsuite_info'

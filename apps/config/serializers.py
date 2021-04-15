@@ -5,11 +5,11 @@
 # @Software: PyCharm
 # @Description:
 from utils.drf_utils.base_model_serializer import BaseModelSerializer
-from .models import TestSuite
+from .models import Config
 
 
-class TestSuiteSerializer(BaseModelSerializer):
+class ConfigSerializer(BaseModelSerializer):
     class Meta:
-        model = TestSuite
+        model = Config
         fields = '__all__'
         read_only_fields = ('creator', 'modifier')

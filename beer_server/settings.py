@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     'project.apps.ProjectConfig',
     'testsuite.apps.TestsuiteConfig',
     'testcase.apps.TestcaseConfig',
-    # 'config.apps.ConfigConfig',
+    'config.apps.ConfigConfig',
 ]
 
 REST_FRAMEWORK = {
@@ -91,7 +91,7 @@ SWAGGER_SETTINGS = {
 
 # djangorestframework-simplejwt配置
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=15),
     # 将refresh token的有效期改为2天
     'REFRESH_TOKEN_LIFETIME': timedelta(days=2),
     'ROTATE_REFRESH_TOKENS': True,
