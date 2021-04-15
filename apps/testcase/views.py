@@ -1,11 +1,13 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import permissions
 from rest_framework.decorators import action
 
+from config.models import Config
 from utils.drf_utils.custom_json_response import JsonResponse
 from .serializers import TestCaseSerializer, RunTestCaseSerializer
-from .models import TestCase, TestStep
+from .models import TestCase
 from utils.drf_utils.custom_model_view_set import CustomModelViewSet
-from utils.http_utils.http_request import send_request
+from utils.http_utils.http_request import run_testcase
 
 
 # Create your views here.
@@ -22,18 +24,16 @@ class TestCasesViewSet(CustomModelViewSet):
     def perform_update(self, serializer):
         serializer.save(modifier=self.request.user.username)
 
-    @action(methods=['post'], detail=True)
+    @action(methods=['post'], detail=True, serializer_class=RunTestCaseSerializer)
     def run(self, request, pk=None):
-        teststep_objs = TestStep.objects.filter(testcase_id=pk)
-        data = []
-        for teststep in teststep_objs:
-            if '$' in teststep.url_path:
-                # 设置了全局base_url
-                pass
-            else:
-                resp = send_request(teststep)
-                data.append({teststep.id: resp})
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        if request.data.get('config_id', False):
+            # 选择某个配置来执行用例
+            run_testcase(testcase=get_object_or_404(TestCase, pk=pk),
+                         config=get_object_or_404(Config, pk=request.data.get('config_id')))
+        else:
+            # 不选择配置直接执行用例
+            run_testcase(testcase=get_object_or_404(TestCase, pk=pk))
+        data = {"msg": "success"}
         return JsonResponse(data=data, code=20000, msg='运行成功')
-
-    def get_serializer_class(self):
-        return RunTestCaseSerializer if self.action == 'run' else TestCaseSerializer

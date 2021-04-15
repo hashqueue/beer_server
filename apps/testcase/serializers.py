@@ -4,18 +4,18 @@
 # @File    : serializers.py
 # @Software: PyCharm
 # @Description:
-from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers
 from utils.drf_utils.base_model_serializer import BaseModelSerializer
 from .models import TestCase, TestStep, TestStepValidator
 
 
-class TestStepValidatorSerializer(ModelSerializer):
+class TestStepValidatorSerializer(serializers.ModelSerializer):
     class Meta:
         model = TestStepValidator
         exclude = ('teststep',)
 
 
-class TestStepSerializer(ModelSerializer):
+class TestStepSerializer(serializers.ModelSerializer):
     step_validators = TestStepValidatorSerializer(many=True, required=False)
 
     class Meta:
@@ -66,8 +66,10 @@ class TestCaseSerializer(BaseModelSerializer):
         return instance
 
 
-class RunTestCaseSerializer(BaseModelSerializer):
+class RunTestCaseSerializer(serializers.ModelSerializer):
+    config_id = serializers.IntegerField(required=False, write_only=True, help_text='运行测试用例时使用的配置项ID',
+                                         label='运行测试用例时使用的配置项ID')
+
     class Meta:
         model = TestCase
-        fields = '__all__'
-        read_only_fields = ('creator', 'modifier', 'testcase_name', 'testcase_desc', 'testsuite')
+        fields = ('id', 'config_id')

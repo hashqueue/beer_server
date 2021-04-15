@@ -9,30 +9,17 @@ from json.decoder import JSONDecodeError
 
 from requests import Session
 from requests.exceptions import RequestException
-from testcase.models import TestCase
-from testsuite.models import TestSuite
-from project.models import Project
 
 
-def parse_global_params(teststep, origin_global_param):
-    testcase = TestCase.objects.get(id=teststep.testcase_id)
-    testsuite = TestSuite.objects.get(id=testcase.testsuite_id)
-    project = Project.objects.get(id=testsuite.project_id)
-    project_global_params = project.config_set.all()
-    for project_global_param in project_global_params:
-        pass
+def handle_request_data_before_send_request():
+    pass
 
 
-def handle_data(func):
-    def wrapper(*args, **kwargs):
-        res = func(*args, **kwargs)
-        return res
-
-    return wrapper
+def handle_response_data_after_send_request():
+    pass
 
 
-@handle_data
-def send_request(teststep, timeout=120):
+def send_request(teststep=None, timeout=120):
     request_data = {"method": teststep.method, "url": teststep.url_path, "params": teststep.params,
                     "data": teststep.data, "headers": teststep.headers, "cookies": teststep.cookies,
                     "json": teststep.json}
@@ -58,6 +45,12 @@ def send_request(teststep, timeout=120):
         return {"err": str(err)}
 
 
-if __name__ == '__main__':
-    # print(HttpSession.request('GET', 'https://www.baidu.com/'))
-    pass
+def run_testcase(testcase, config=None):
+    if config:
+        # 全局变量
+        global_variable = config.global_variable
+        # 全局函数
+        global_func = config.global_func
+    handle_request_data_before_send_request()
+    send_request()
+    handle_response_data_after_send_request()
