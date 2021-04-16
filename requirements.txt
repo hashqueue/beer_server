@@ -14,6 +14,7 @@ idna==2.10
 inflection==0.5.1
 itypes==1.2.0
 Jinja2==2.11.3
+jmespath==0.10.0
 Markdown==3.3.4
 MarkupSafe==1.1.1
 mysqlclient==2.0.3

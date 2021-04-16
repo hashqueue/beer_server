@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2021/4/12 下午12:48
 # @Author  : anonymous
-# @File    : http_request.py
+# @File    : request.py
 # @Software: PyCharm
 # @Description:
 import time
@@ -9,6 +9,10 @@ from json.decoder import JSONDecodeError
 
 from requests import Session
 from requests.exceptions import RequestException
+import jmespath
+
+from testcase.models import TestStep
+from .parser import parse_request_url
 
 
 def handle_request_data_before_send_request():
@@ -51,6 +55,13 @@ def run_testcase(testcase, config=None):
         global_variable = config.global_variable
         # 全局函数
         global_func = config.global_func
+        teststeps = TestStep.objects.filter(testcase_id=testcase.id)
+        if global_variable:
+            # 批量替换测试步骤的全局变量
+            for teststep in teststeps:
+                for key, value in global_variable.items():
+                    if '$' + key in teststep.url_path:
+                        teststep.url_path = parse_request_url(base_url=global_variable.get(key), path=teststep.url_path)
     handle_request_data_before_send_request()
     send_request()
     handle_response_data_after_send_request()

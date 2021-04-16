@@ -7,7 +7,7 @@ from utils.drf_utils.custom_json_response import JsonResponse
 from .serializers import TestCaseSerializer, RunTestCaseSerializer
 from .models import TestCase
 from utils.drf_utils.custom_model_view_set import CustomModelViewSet
-from utils.http_utils.http_request import run_testcase
+from utils.http_utils.request import run_testcase
 
 
 # Create your views here.
