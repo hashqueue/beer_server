@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import permissions
+from rest_framework import permissions, status
 from rest_framework.decorators import action
 
 from config.models import Config
@@ -30,10 +30,10 @@ class TestCasesViewSet(CustomModelViewSet):
         serializer.is_valid(raise_exception=True)
         if request.data.get('config_id', False):
             # 选择某个配置来执行用例
-            run_testcase(testcase=get_object_or_404(TestCase, pk=pk),
-                         config=get_object_or_404(Config, pk=request.data.get('config_id')))
+            data = run_testcase(testcase=get_object_or_404(TestCase, pk=pk),
+                                config=get_object_or_404(Config, pk=request.data.get('config_id')))
+            return JsonResponse(data=data, code=20000, msg='运行成功', status=status.HTTP_200_OK)
         else:
             # 不选择配置直接执行用例
-            run_testcase(testcase=get_object_or_404(TestCase, pk=pk))
-        data = {"msg": "success"}
-        return JsonResponse(data=data, code=20000, msg='运行成功')
+            data = run_testcase(testcase=get_object_or_404(TestCase, pk=pk))
+            return JsonResponse(data=data, code=20000, msg='运行成功', status=status.HTTP_200_OK)

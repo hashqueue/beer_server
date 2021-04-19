@@ -12,15 +12,42 @@ from requests.exceptions import RequestException
 import jmespath
 
 from testcase.models import TestStep
-from .parser import parse_request_url, regx_variables
+from .parser import regx_variables
 
 
-def handle_request_data_before_send_request():
-    pass
+def handle_request_data_before_send_request(testcase, config):
+    teststeps = TestStep.objects.filter(testcase_id=testcase.id)
+    if config:
+        # 全局变量
+        global_variable = config.global_variable
+        # 全局函数
+        global_func = config.global_func
+        if global_variable:
+            # 批量替换测试步骤中引用的全局变量
+            for teststep in teststeps:
+                teststep.url_path = regx_variables(teststep.url_path, global_variables=global_variable)
+                if teststep.params:
+                    for params_item in teststep.params.keys():
+                        teststep.params[params_item] = regx_variables(teststep.params[params_item],
+                                                                      global_variables=global_variable)
+                if teststep.data:
+                    for data_item in teststep.data.keys():
+                        teststep.data[data_item] = regx_variables(teststep.data[data_item],
+                                                                  global_variables=global_variable)
+                if teststep.headers:
+                    for headers_item in teststep.headers.keys():
+                        teststep.headers[headers_item] = regx_variables(teststep.headers[headers_item],
+                                                                        global_variables=global_variable)
+                if teststep.cookies:
+                    for cookies_item in teststep.cookies.keys():
+                        teststep.cookies[cookies_item] = regx_variables(teststep.cookies[cookies_item],
+                                                                        global_variables=global_variable)
+        return teststeps
+    return teststeps
 
 
-def handle_response_data_after_send_request():
-    pass
+def handle_response_data_after_send_request(response_datas):
+    return response_datas
 
 
 def send_request(teststep=None, timeout=120):
@@ -50,22 +77,10 @@ def send_request(teststep=None, timeout=120):
 
 
 def run_testcase(testcase, config=None):
-    if config:
-        # 全局变量
-        global_variable = config.global_variable
-        # 全局函数
-        global_func = config.global_func
-        teststeps = TestStep.objects.filter(testcase_id=testcase.id)
-        if global_variable:
-            # 批量替换测试步骤中引用的全局变量
-            for teststep in teststeps:
-                teststep.teststep_name = regx_variables(teststep.teststep_name, global_variables=global_variable)
-                teststep.url_path = regx_variables(teststep.url_path, global_variables=global_variable)
-                teststep.teststep_name = regx_variables(teststep.teststep_name, global_variables=global_variable)
-                teststep.teststep_name = regx_variables(teststep.teststep_name, global_variables=global_variable)
-                teststep.teststep_name = regx_variables(teststep.teststep_name, global_variables=global_variable)
-                teststep.teststep_name = regx_variables(teststep.teststep_name, global_variables=global_variable)
-
-    handle_request_data_before_send_request()
-    send_request()
-    handle_response_data_after_send_request()
+    teststeps = handle_request_data_before_send_request(testcase, config)
+    response_datas = {}
+    for teststep in teststeps:
+        resp = send_request(teststep=teststep)
+        response_datas[teststep.teststep_name] = resp
+    testcase_resps = handle_response_data_after_send_request(response_datas)
+    return testcase_resps
