@@ -43,6 +43,9 @@ def regx_variables(raw_text: str, global_variables: dict) -> str:
     """
     need_replace_vars_list = re.findall(r'\$(\w+)', raw_text)
     for raw_variable in need_replace_vars_list:
+        for key in global_variables.keys():
+            if key in raw_variable:
+                raw_variable = key
         try:
             raw_text = re.sub(r'\$' + raw_variable, global_variables[raw_variable], raw_text)
         except KeyError as err:
@@ -52,8 +55,8 @@ def regx_variables(raw_text: str, global_variables: dict) -> str:
 
 if __name__ == '__main__':
     # print(parse_request_url(base_url='http://www.baidu.com/', path='/api/v1/auth/'))
-    url = "$base_url/$url_path"
-    global_vars = {'base_url': 'http://www.baidu.com', 'url_path': 'api/v1/auth/projects/', 'username': 'admin1',
+    url = "http://$base_url.cn/sys/$url_path/model/"
+    global_vars = {'base_url': 'www.baidu.com', 'url_path': 'api/v1/auth/projects/', 'username': 'admin1',
                    'password': '111111'}
     url = regx_variables(raw_text=url, global_variables=global_vars)
     print(url)
