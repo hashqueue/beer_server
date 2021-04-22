@@ -12,7 +12,7 @@ from requests.exceptions import RequestException
 import jmespath
 
 from testcase.models import TestStep
-from .parser import regx_variables
+from .parser import regx_variables, parse_request_url
 
 
 def handle_request_data_before_send_request(testcase, config):
@@ -25,7 +25,10 @@ def handle_request_data_before_send_request(testcase, config):
         if global_variable:
             # 批量替换测试步骤中引用的全局变量
             for teststep in teststeps:
+                # 对请求的url_path进行解析替换,如果没有可用全局变量,则返回原始值
                 teststep.url_path = regx_variables(teststep.url_path, global_variables=global_variable)
+                # 判断url_path是否符合有要求
+                teststep.url_path = parse_request_url(url_path=teststep.url_path)
                 if teststep.params:
                     for params_item in teststep.params.keys():
                         teststep.params[params_item] = regx_variables(teststep.params[params_item],
@@ -43,7 +46,10 @@ def handle_request_data_before_send_request(testcase, config):
                         teststep.cookies[cookies_item] = regx_variables(teststep.cookies[cookies_item],
                                                                         global_variables=global_variable)
         return teststeps
-    return teststeps
+    for teststep in teststeps:
+        # 判断url_path是否符合有要求
+        teststep.url_path = parse_request_url(url_path=teststep.url_path)
+        return teststeps
 
 
 def handle_response_data_after_send_request(response_datas):
