@@ -23,27 +23,27 @@ def parse_request_url(url_path: str = None) -> str:
         if re.match(not_end_with_double_slash_pattern, url_path):
             return url_path
         else:
-            raise ValidationError("请求的base_url不能以`//`结尾,必须设置域名或ip:port")
+            raise ValidationError({url_path: "请求的base_url不能以`//`结尾,必须设置域名或ip:port"}, code=400)
     else:
-        raise ValidationError("测试步骤中的url_path未以`http(s)://`开头")
+        raise ValidationError({url_path: "测试步骤中的url_path未以`http(s)://`开头"}, code=400)
 
 
-def regx_variables(raw_text: str, global_variables: dict) -> str:
+def regx_variables(raw_text: str, variables: dict) -> str:
     """
-    对请求数据中引用了全局变量的数据进行解析，然后替换为全局变量中变量的具体的值
-    @param raw_text: 请求数据中需要进行解析替换为全局变量值的数据
-    @param global_variables: 可选的全局变量
+    对请求数据中引用了全局变量或测试用例变量的数据进行解析，然后替换为全局变量或测试用例变量中变量的具体的值
+    @param variables: 可选的全局变量或测试用例变量
+    @param raw_text: 请求数据中需要进行解析替换为全局变量或测试用例变量值的数据
     @return: 已完成替换的请求数据
     """
     need_replace_vars_list = re.findall(r'\$(\w+)', raw_text)
     for raw_variable in need_replace_vars_list:
-        for key in global_variables.keys():
+        for key in variables.keys():
             if key in raw_variable:
                 raw_variable = key
         try:
-            raw_text = re.sub(r'\$' + raw_variable, global_variables[raw_variable], raw_text)
+            raw_text = re.sub(r'\$' + raw_variable, variables[raw_variable], raw_text)
         except KeyError as err:
-            raise ValidationError(f"未在项目配置中找到{raw_variable}全局变量")
+            raise ValidationError({raw_text: f"未在项目配置中找到{raw_variable}全局变量"}, code=400)
     return raw_text
 
 
