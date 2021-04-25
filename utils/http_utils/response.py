@@ -4,7 +4,6 @@
 # @File    : response.py
 # @Software: PyCharm
 # @Description:
-import json
 import jmespath
 from jmespath.exceptions import JMESPathError
 
