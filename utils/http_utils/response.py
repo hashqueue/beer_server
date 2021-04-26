@@ -6,6 +6,7 @@
 # @Description:
 import jmespath
 from jmespath.exceptions import JMESPathError
+from rest_framework.exceptions import ValidationError
 
 
 def extract_data_with_jmespath(resp_obj, jmespath_expression):
@@ -23,27 +24,32 @@ def extract_data_with_jmespath(resp_obj, jmespath_expression):
     @param jmespath_expression: jmespath表达式
     @return: jmespath表达式提取到的值
     """
-    resp_obj_data = {
-        "status_code": resp_obj.get('response_status_code'),
-        "response_headers": resp_obj.get('response_headers'),
-        "body": resp_obj.get('response_body'),
-        "request_headers": resp_obj.get('request_headers'),
-        "request_url": resp_obj.get('request_url'),
-        "cookies": resp_obj.get('response_cookies')
-    }
     try:
-        extract_variable_value = jmespath.search(jmespath_expression, resp_obj_data)
+        extract_variable_value = jmespath.search(jmespath_expression, resp_obj)
         if extract_variable_value is None:
-            return False, f'未找到{jmespath_expression}'
+            jmespath_expression_list = jmespath_expression.split('.')
+            keys_str = '.'.join(jmespath_expression_list[:-1])
+            last_key_str = jmespath_expression_list[-1]
+            # jmespath中区分未找到键的值为None 和 某个键的值就是None
+            if not jmespath.search(f"contains(keys({keys_str}), '{last_key_str}')", resp_obj):
+                raise ValidationError({jmespath_expression: f'未找到{jmespath_expression}'}, code=400)
         return extract_variable_value
     except JMESPathError as err:
-        return {"err": str(err)}
+        raise ValidationError({'JMESPathError': str(err)}, code=400)
 
 
 def validate_resp_data(resp_data, validator_type, jmespath_expression, expected_value):
     """
     测试步骤断言处理
-    @param resp_data: 响应体数据
+    @param resp_data: 响应体数据 dict
+        {
+        "status_code": {...},
+        "response_headers": {...},
+        "body": {...},
+        "request_headers": {...},
+        "request_url": {...},
+        "cookies": {...}
+        }
     @param validator_type: 断言类型
     @param jmespath_expression: jmespath表达式
     @param expected_value: 预期结果
@@ -57,9 +63,9 @@ def validate_resp_data(resp_data, validator_type, jmespath_expression, expected_
             last_key_str = jmespath_expression_list[-1]
             # jmespath中区分未找到键的值为None 和 某个键的值就是None
             if not jmespath.search(f"contains(keys({keys_str}), '{last_key_str}')", resp_data):
-                return False, f'未找到{jmespath_expression}'
+                raise ValidationError({jmespath_expression: f'未找到{jmespath_expression}'}, code=400)
     except JMESPathError as err1:
-        return False, str(err1)
+        raise ValidationError({'JMESPathError': str(err1)}, code=400)
     # 对json字符串中的true，false，null做兼容处理
     if expected_value == 'true':
         expected_value = True
@@ -125,9 +131,9 @@ def validate_resp_data(resp_data, validator_type, jmespath_expression, expected_
             assert str(actual_value).startswith(str(expected_value)), f'实际结果`{actual_value}`不以预期结果`{expected_value}`开头'
             return True
     except AssertionError as err2:
-        return False, str(err2)
+        raise ValidationError({'AssertionError': str(err2)}, code=400)
     except TypeError as err3:
-        return False, str(err3)
+        raise ValidationError({'TypeError': str(err3)}, code=400)
 
 
 if __name__ == '__main__':

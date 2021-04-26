@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'drf_yasg',
+    'django_celery_results',
 
     'user.apps.UserConfig',
     'project.apps.ProjectConfig',
@@ -185,6 +186,11 @@ USE_L10N = True
 
 USE_TZ = True
 
+# Celery配置选项
+# 配置时区,使用与django项目相同的时区设置
+CELERY_TIMEZONE = TIME_ZONE
+# 异步任务运行结果使用django自带的ORM来存储
+CELERY_RESULT_BACKEND = 'django-db'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/

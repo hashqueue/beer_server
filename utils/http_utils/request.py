@@ -9,70 +9,14 @@ from json.decoder import JSONDecodeError
 
 from requests import Session
 from requests.exceptions import RequestException
+from rest_framework.exceptions import ValidationError
 
-from testcase.models import TestStep
+from testcase.models import TestStep, TestStepValidator
 from .parser import regx_variables, parse_request_url
-from .response import extract_data_with_jmespath
+from .response import extract_data_with_jmespath, validate_resp_data
 
 
-def handle_global_and_testcase_variables(teststep, variables):
-    # 批量替换测试步骤中引用的全局变量
-    # 对请求的url_path进行解析替换,如果没有可用全局变量,则返回原始值
-    teststep.url_path = regx_variables(teststep.url_path, variables=variables)
-    # 判断url_path是否符合有要求
-    teststep.url_path = parse_request_url(url_path=teststep.url_path)
-    if teststep.params:
-        for params_item in teststep.params.keys():
-            teststep.params[params_item] = regx_variables(teststep.params[params_item], variables=variables)
-    if teststep.data:
-        for data_item in teststep.data.keys():
-            teststep.data[data_item] = regx_variables(teststep.data[data_item], variables=variables)
-    if teststep.headers:
-        for headers_item in teststep.headers.keys():
-            teststep.headers[headers_item] = regx_variables(teststep.headers[headers_item], variables=variables)
-    if teststep.cookies:
-        for cookies_item in teststep.cookies.keys():
-            teststep.cookies[cookies_item] = regx_variables(teststep.cookies[cookies_item], variables=variables)
-
-
-def handle_request_data_before_send_request(teststep, config, testcase_variables):
-    """
-    测试步骤发起请求前，对数据进行处理
-    @param testcase_variables: 
-    @param teststep:
-    @param config:
-    @return:
-    """
-    if config:
-        # 全局变量
-        global_variables = config.global_variable
-        # 全局函数
-        global_func = config.global_func
-        handle_global_and_testcase_variables(teststep=teststep, variables=global_variables)
-    if testcase_variables != {}:
-        # 测试用例变量的优先级>全局变量：测试用例变量会覆盖全局变量
-        handle_global_and_testcase_variables(teststep=teststep, variables=testcase_variables)
-    # 发送请求时：判断url_path是否符合要求
-    teststep.url_path = parse_request_url(url_path=teststep.url_path)
-    return teststep
-
-
-def handle_response_data_after_send_request(teststep_resp_obj, teststep_extract, testcase_variables):
-    """
-    测试步骤发起请求后，对响应对象进行处理
-    @param testcase_variables: 
-    @param teststep_extract: 
-    @param teststep_resp_obj:
-    @return:
-    """
-    if teststep_extract:
-        for var_name, jmespath_expression in teststep_extract.items():
-            resp = extract_data_with_jmespath(resp_obj=teststep_resp_obj, jmespath_expression=jmespath_expression)
-            testcase_variables['$' + var_name] = resp
-    return teststep_resp_obj
-
-
-def send_request(teststep=None, timeout=120):
+def send_request(teststep, timeout=120):
     """
     发送接口请求并获取响应对象
     @param teststep:
@@ -104,6 +48,88 @@ def send_request(teststep=None, timeout=120):
         return {"err": str(err)}
 
 
+def handle_global_or_testcase_variables(teststep, variables):
+    """
+    对测试步骤中引用的全局变量(1.项目级别配置的全局变量 2.测试用例级别配置的全局变量===>来源于对测试步骤响应结果的提取)进行解析和替换
+    @param teststep:
+    @param variables:
+    @return:
+    """
+    # 批量替换测试步骤中引用的全局变量
+    # 对请求的url_path进行解析替换,如果没有可用全局变量,则返回原始值
+    teststep.url_path = regx_variables(teststep.url_path, variables=variables)
+    # 判断url_path是否符合要求
+    teststep.url_path = parse_request_url(url_path=teststep.url_path)
+    if teststep.params:
+        for params_item in teststep.params.keys():
+            teststep.params[params_item] = regx_variables(teststep.params[params_item], variables=variables)
+    if teststep.data:
+        for data_item in teststep.data.keys():
+            teststep.data[data_item] = regx_variables(teststep.data[data_item], variables=variables)
+    if teststep.headers:
+        for headers_item in teststep.headers.keys():
+            teststep.headers[headers_item] = regx_variables(teststep.headers[headers_item], variables=variables)
+    if teststep.cookies:
+        for cookies_item in teststep.cookies.keys():
+            teststep.cookies[cookies_item] = regx_variables(teststep.cookies[cookies_item], variables=variables)
+
+
+def handle_request_data_before_send_request(teststep, config, testcase_variables):
+    """
+    测试步骤发起请求前，对数据进行处理
+    @param testcase_variables: 
+    @param teststep:
+    @param config:
+    @return:
+    """
+    if config:
+        # 全局变量
+        global_variables = config.global_variable
+        # 全局函数
+        global_func = config.global_func
+        handle_global_or_testcase_variables(teststep=teststep, variables=global_variables)
+    if testcase_variables != {}:
+        # 测试用例变量的优先级>全局变量：测试用例变量会覆盖全局变量
+        handle_global_or_testcase_variables(teststep=teststep, variables=testcase_variables)
+    # 发送请求时：判断url_path是否符合要求
+    teststep.url_path = parse_request_url(url_path=teststep.url_path)
+
+
+def handle_response_data_after_send_request(teststep_resp_obj, teststep, testcase_variables):
+    """
+    测试步骤发起请求后，对响应对象进行处理
+    @param teststep:
+    @param testcase_variables:
+    @param teststep_resp_obj:
+    @return:
+    """
+    resp_obj_data = {
+        "status_code": teststep_resp_obj.get('response_status_code'),
+        "response_headers": teststep_resp_obj.get('response_headers'),
+        "body": teststep_resp_obj.get('response_body'),
+        "request_headers": teststep_resp_obj.get('request_headers'),
+        "request_url": teststep_resp_obj.get('request_url'),
+        "cookies": teststep_resp_obj.get('response_cookies')
+    }
+    # 解析提取变量的值，保存到测试用例级别的全局变量的字典testcase_variables中，该测试用例下的所有测试步骤都可以使用该字典中的全局变量
+    if teststep.extract:
+        for var_name, jmespath_expression in teststep.extract.items():
+            extract_value = extract_data_with_jmespath(resp_obj=resp_obj_data,
+                                                       jmespath_expression=jmespath_expression)
+            testcase_variables['$' + var_name] = extract_value
+    # 断言处理
+    teststep_validators = TestStepValidator.objects.filter(teststep_id=teststep.id)
+    if len(teststep_validators) > 0:
+        for teststep_validator in teststep_validators:
+            res = validate_resp_data(resp_data=resp_obj_data, validator_type=teststep_validator.validator_type,
+                                     jmespath_expression=teststep_validator.jmespath_expression,
+                                     expected_value=teststep_validator.expected_value)
+            # 断言成功处理逻辑
+            if res:
+                pass
+    return teststep_resp_obj
+
+
 def run_teststep(teststep, config, testcase_variables):
     """
     运行测试步骤
@@ -112,9 +138,9 @@ def run_teststep(teststep, config, testcase_variables):
     @param config:
     @return:
     """
-    teststep_new = handle_request_data_before_send_request(teststep, config, testcase_variables=testcase_variables)
-    teststep_resp_data = send_request(teststep=teststep_new)
-    handle_response_data_after_send_request(teststep_resp_obj=teststep_resp_data, teststep_extract=teststep.extract,
+    handle_request_data_before_send_request(teststep, config, testcase_variables=testcase_variables)
+    teststep_resp_data = send_request(teststep=teststep)
+    handle_response_data_after_send_request(teststep_resp_obj=teststep_resp_data, teststep=teststep,
                                             testcase_variables=testcase_variables)
     return teststep_resp_data
 
@@ -126,11 +152,13 @@ def run_testcase(testcase, config=None):
     @param config:
     @return:
     """
-    # 测试用例层面的全局变量 ===> 来源于测试步骤中的提取变量
+    # testcase_variables：测试用例层面的全局变量 ===> 来源于测试步骤中的提取变量
     testcase_variables = {}
     teststeps = TestStep.objects.filter(testcase_id=testcase.id)
     testcase_resp_datas = {}
+    if len(teststeps) == 0:
+        raise ValidationError({'Error': '测试用例的测试步骤不能为空'}, code=400)
     for teststep in teststeps:
         teststep_resp_data = run_teststep(teststep, config, testcase_variables)
-        testcase_resp_datas[teststep.teststep_name] = teststep_resp_data
+        testcase_resp_datas[teststep.id] = teststep_resp_data
     return testcase_resp_datas
