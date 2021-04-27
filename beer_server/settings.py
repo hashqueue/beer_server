@@ -189,6 +189,7 @@ USE_TZ = True
 # Celery配置选项
 # 配置时区,使用与django项目相同的时区设置
 CELERY_TIMEZONE = TIME_ZONE
+CELERY_ENABLE_UTC = False
 # 异步任务运行结果使用django自带的ORM来存储
 CELERY_RESULT_BACKEND = 'django-db'
 

@@ -1,6 +1,6 @@
-from django.shortcuts import get_object_or_404
 from rest_framework import permissions, status
 from rest_framework.decorators import action
+from rest_framework.generics import get_object_or_404
 
 from config.models import Config
 from utils.drf_utils.custom_json_response import JsonResponse
@@ -26,6 +26,9 @@ class TestCasesViewSet(CustomModelViewSet):
 
     @action(methods=['post'], detail=True, serializer_class=RunTestCaseSerializer)
     def run(self, request, pk=None):
+        """
+        运行测试用例
+        """
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         if request.data.get('config_id', False):

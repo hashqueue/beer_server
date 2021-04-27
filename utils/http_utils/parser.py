@@ -43,14 +43,14 @@ def regx_variables(raw_text: str, variables: dict) -> str:
         try:
             raw_text = re.sub(r'\$' + raw_variable, variables[raw_variable], raw_text)
         except KeyError as err:
-            raise ValidationError({raw_text: f"未在项目配置中找到{raw_variable}全局变量"}, code=400)
+            raise ValidationError({raw_text: f"未在项目配置中找到{raw_variable}变量"}, code=400)
     return raw_text
 
 
 if __name__ == '__main__':
     print(parse_request_url(url_path='https://www.baidu.com/api/v1/auth/'))
-    # url = "http://$base_url.cn/sys/$url_path/model/"
+    # url = "http://$1base_url.cn/sys/$url_path/model/"
     # global_vars = {'base_url': 'www.baidu.com', 'url_path': 'api/v1/auth/projects/', 'username': 'admin1',
     #                'password': '111111'}
-    # url = regx_variables(raw_text=url, global_variables=global_vars)
+    # url = regx_variables(raw_text=url, variables=global_vars)
     # print(url)

@@ -8,6 +8,7 @@ import time
 from json.decoder import JSONDecodeError
 
 from requests import Session
+from requests.utils import dict_from_cookiejar
 from requests.exceptions import RequestException
 from rest_framework.exceptions import ValidationError
 
@@ -33,15 +34,15 @@ def send_request(teststep, timeout=120):
         response_time_ms = round((time.time() - start_timestamp) * 1000, 2)
         try:
             response.json()
-            return {"response_status_code": response.status_code, "response_headers": response.headers,
-                    "response_body": response.json(), "request_headers": response.request.headers,
-                    "request_url": response.url, "response_cookies": response.cookies,
+            return {"response_status_code": response.status_code, "response_headers": dict(response.headers),
+                    "response_body": response.json(), "request_headers": dict(response.request.headers),
+                    "request_url": response.url, "response_cookies": dict_from_cookiejar(response.cookies),
                     "response_encoding": response.encoding, "response_time_ms": response_time_ms
                     }
         except JSONDecodeError:
-            return {"response_status_code": response.status_code, "response_headers": response.headers,
-                    "response_body": response.text, "request_headers": response.request.headers,
-                    "request_url": response.url, "response_cookies": response.cookies,
+            return {"response_status_code": response.status_code, "response_headers": dict(response.headers),
+                    "response_body": response.text, "request_headers": dict(response.request.headers),
+                    "request_url": response.url, "response_cookies": dict_from_cookiejar(response.cookies),
                     "response_encoding": response.encoding, "response_time_ms": response_time_ms
                     }
     except RequestException as err:
@@ -87,7 +88,12 @@ def handle_request_data_before_send_request(teststep, config, testcase_variables
         global_variables = config.global_variable
         # 全局函数
         global_func = config.global_func
-        handle_global_or_testcase_variables(teststep=teststep, variables=global_variables)
+        try:
+            handle_global_or_testcase_variables(teststep=teststep, variables=global_variables)
+        except ValidationError:
+            if testcase_variables != {}:
+                # 测试用例变量的优先级>全局变量：测试用例变量会覆盖全局变量
+                handle_global_or_testcase_variables(teststep=teststep, variables=testcase_variables)
     if testcase_variables != {}:
         # 测试用例变量的优先级>全局变量：测试用例变量会覆盖全局变量
         handle_global_or_testcase_variables(teststep=teststep, variables=testcase_variables)
@@ -103,6 +109,7 @@ def handle_response_data_after_send_request(teststep_resp_obj, teststep, testcas
     @param teststep_resp_obj:
     @return:
     """
+    teststep_validators_results = []
     resp_obj_data = {
         "status_code": teststep_resp_obj.get('response_status_code'),
         "response_headers": teststep_resp_obj.get('response_headers'),
@@ -116,7 +123,7 @@ def handle_response_data_after_send_request(teststep_resp_obj, teststep, testcas
         for var_name, jmespath_expression in teststep.extract.items():
             extract_value = extract_data_with_jmespath(resp_obj=resp_obj_data,
                                                        jmespath_expression=jmespath_expression)
-            testcase_variables['$' + var_name] = extract_value
+            testcase_variables[var_name] = extract_value
     # 断言处理
     teststep_validators = TestStepValidator.objects.filter(teststep_id=teststep.id)
     if len(teststep_validators) > 0:
@@ -124,9 +131,14 @@ def handle_response_data_after_send_request(teststep_resp_obj, teststep, testcas
             res = validate_resp_data(resp_data=resp_obj_data, validator_type=teststep_validator.validator_type,
                                      jmespath_expression=teststep_validator.jmespath_expression,
                                      expected_value=teststep_validator.expected_value)
-            # 断言成功处理逻辑
-            if res:
-                pass
+            # 断言成功/失败处理逻辑，保存断言结果到响应体对象中
+            teststep_validators_results.append({'validator_id': teststep_validator.id,
+                                                'validator_type': teststep_validator.validator_type,
+                                                'validator_jmespath_expression': teststep_validator.jmespath_expression,
+                                                'validator_expected_value': teststep_validator.expected_value,
+                                                'validator_result': res
+                                                })
+    teststep_resp_obj['teststep_validators_results'] = teststep_validators_results
     return teststep_resp_obj
 
 
@@ -160,5 +172,5 @@ def run_testcase(testcase, config=None):
         raise ValidationError({'Error': '测试用例的测试步骤不能为空'}, code=400)
     for teststep in teststeps:
         teststep_resp_data = run_teststep(teststep, config, testcase_variables)
-        testcase_resp_datas[teststep.id] = teststep_resp_data
+        testcase_resp_datas['teststep_' + str(teststep.id)] = teststep_resp_data
     return testcase_resp_datas
