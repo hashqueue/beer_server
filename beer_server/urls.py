@@ -41,6 +41,7 @@ urlpatterns = [
     path('api/', include('testsuite.urls')),
     path('api/', include('testcase.urls')),
     path('api/', include('config.urls')),
+    path('api/', include('task.urls')),
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),

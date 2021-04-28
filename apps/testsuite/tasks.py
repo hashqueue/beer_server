@@ -14,7 +14,7 @@ from utils.http_utils.request import run_testcase
 
 
 @shared_task
-def run_testsuite(testsuite_id, config_id=None):
+def run_testsuite(testsuite_id, config_id=None, creator=None):
     """
     异步运行测试套件
     @param testsuite_id:
@@ -30,7 +30,7 @@ def run_testsuite(testsuite_id, config_id=None):
     run_testsuite_result = {}
     run_testcases_result = []
     # 汇总数据
-    summary_data = {'count': len(testcases), 'success': {'count': 0, 'testcase_ids': []},
+    summary_data = {'creator': creator, 'count': len(testcases), 'success': {'count': 0, 'testcase_ids': []},
                     'exception': {'count': 0, 'testcase_ids': []},
                     'failure': {'count': 0, 'testcase_ids': []}}
     for testcase in testcases:

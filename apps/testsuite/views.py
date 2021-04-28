@@ -34,9 +34,11 @@ class TestSuitesViewSet(CustomModelViewSet):
         if request.data.get('config_id', False):
             # 选择某个配置来运行测试套件
             run_testsuite.delay(testsuite_id=get_object_or_404(TestSuite, pk=pk).id,
-                                config_id=get_object_or_404(Config, pk=request.data.get('config_id')).id)
+                                config_id=get_object_or_404(Config, pk=request.data.get('config_id')).id,
+                                creator=request.user.username)
             return JsonResponse(data=[], code=20000, msg='启动运行测试套件任务成功,请稍后查看任务运行结果', status=status.HTTP_200_OK)
         else:
             # 不选择配置直接执行测试套件
-            run_testsuite.delay(testsuite_id=get_object_or_404(TestSuite, pk=pk).id)
+            run_testsuite.delay(testsuite_id=get_object_or_404(TestSuite, pk=pk).id,
+                                creator=request.user.username)
             return JsonResponse(data=[], code=20000, msg='启动运行测试套件任务成功,请稍后查看任务运行结果', status=status.HTTP_200_OK)
