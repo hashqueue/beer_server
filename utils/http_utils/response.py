@@ -55,7 +55,6 @@ def validate_resp_data(resp_data, validator_type, jmespath_expression, expected_
     @param expected_value: 预期结果
     @return: 断言成功返回True，断言失败返回一个元组(False, 断言失败的原因)
     """
-    success_result_data = {'status': True, 'err': None}
     try:
         actual_value = jmespath.search(jmespath_expression, resp_data)
         if actual_value is None:
@@ -75,62 +74,52 @@ def validate_resp_data(resp_data, validator_type, jmespath_expression, expected_
     elif expected_value == 'null':
         expected_value = None
     try:
-        if validator_type == 'equal':
+        if validator_type == 'equal_integer':
+            assert actual_value == int(expected_value), f'实际结果`{actual_value}`不等于预期结果`{expected_value}`'
+        elif validator_type == 'equal_string':
             assert actual_value == expected_value, f'实际结果`{actual_value}`不等于预期结果`{expected_value}`'
-            return success_result_data
+        elif validator_type == 'equal_float':
+            assert actual_value == float(expected_value), f'实际结果`{actual_value}`不等于预期结果`{expected_value}`'
         elif validator_type == 'contained_by':
             assert actual_value in expected_value, f'预期结果`{expected_value}`不包含实际结果`{actual_value}`'
-            return success_result_data
         elif validator_type == 'contains':
             assert expected_value in actual_value, f'实际结果`{actual_value}`不包含预期结果`{expected_value}`'
-            return success_result_data
         elif validator_type == 'endswith':
             assert str(actual_value).endswith(str(expected_value)), f'实际结果`{actual_value}`不以预期结果`{expected_value}`结尾'
-            return success_result_data
         elif validator_type == 'greater_or_equals':
             assert actual_value >= expected_value, f'实际结果`{actual_value}`与预期结果`{expected_value}`不满足`实际结果>=预期结果`关系'
-            return success_result_data
         elif validator_type == 'greater_than':
             assert actual_value > expected_value, f'实际结果`{actual_value}`与预期结果`{expected_value}`不满足`实际结果>预期结果`关系'
-            return success_result_data
         elif validator_type == 'length_equal':
             assert isinstance(expected_value, int), f'预期结果`{expected_value}`必须为数字类型'
             assert len(actual_value) == expected_value, f'实际结果的长度为`{len(actual_value)}`, 不等于预期结果`{expected_value}`'
-            return success_result_data
         elif validator_type == 'length_greater_or_equals':
             assert isinstance(expected_value, int), f'预期结果`{expected_value}`必须为数字类型'
             assert len(actual_value) >= expected_value, \
                 f'实际结果的长度为`{len(actual_value)}`, 预期结果为`{expected_value}`, 不满足`实际结果长度>=预期结果`关系'
-            return success_result_data
         elif validator_type == 'length_greater_than':
             assert isinstance(expected_value, int), f'预期结果`{expected_value}`必须为数字类型'
             assert len(actual_value) > expected_value, \
                 f'实际结果的长度为`{len(actual_value)}`, 预期结果为`{expected_value}`, 不满足`实际结果长度>预期结果`关系'
-            return success_result_data
         elif validator_type == 'length_less_or_equals':
             assert isinstance(expected_value, int), f'预期结果`{expected_value}`必须为数字类型'
             assert len(actual_value) <= expected_value, \
                 f'实际结果的长度为`{len(actual_value)}`, 预期结果为`{expected_value}`, 不满足`实际结果长度<=预期结果`关系'
-            return success_result_data
         elif validator_type == 'length_less_than':
             assert isinstance(expected_value, int), f'预期结果`{expected_value}`必须为数字类型'
             assert len(actual_value) < expected_value, \
                 f'实际结果的长度为`{len(actual_value)}`, 预期结果为`{expected_value}`, 不满足`实际结果长度<预期结果`关系'
-            return success_result_data
         elif validator_type == 'less_or_equals':
             assert actual_value <= expected_value, f'实际结果`{actual_value}`与预期结果`{expected_value}`不满足`实际结果<=预期结果`关系'
-            return success_result_data
         elif validator_type == 'less_than':
             assert actual_value < expected_value, f'实际结果`{actual_value}`与预期结果`{expected_value}`不满足`实际结果<预期结果`关系'
-            return success_result_data
         elif validator_type == 'not_equal':
             assert actual_value != expected_value, f'实际结果`{actual_value}`与预期结果`{expected_value}`不满足`实际结果!=预期结果`关系'
-            return success_result_data
         elif validator_type == 'regex_match':
             pass
         elif validator_type == 'startswith':
             assert str(actual_value).startswith(str(expected_value)), f'实际结果`{actual_value}`不以预期结果`{expected_value}`开头'
-            return success_result_data
+        return {'status': True, 'err': None}
     except AssertionError as err2:
         return {'status': False, 'err': str(err2)}
     except TypeError as err3:

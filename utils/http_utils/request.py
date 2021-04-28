@@ -138,7 +138,7 @@ def handle_response_data_after_send_request(teststep_resp_obj, teststep, testcas
                                                 'validator_expected_value': teststep_validator.expected_value,
                                                 'validator_result': res
                                                 })
-    teststep_resp_obj['teststep_validators_results'] = teststep_validators_results
+        teststep_resp_obj['teststep_validators_results'] = teststep_validators_results
     return teststep_resp_obj
 
 

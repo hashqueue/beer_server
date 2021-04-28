@@ -55,7 +55,9 @@ class TestStep(models.Model):
 
 class TestStepValidator(models.Model):
     VALIDATOR_TYPE_CHOICES = [
-        ('equal', '实际结果等于预期结果'),
+        ('equal_integer', '实际结果等于预期结果(整数类型进行比较)'),
+        ('equal_string', '实际结果等于预期结果(字符串类型进行比较)'),
+        ('equal_float', '实际结果等于预期结果(浮点数类型进行比较)'),
         ('contained_by', '实际结果包含在预期结果中'),
         ('contains', '预期结果包含在实际结果中'),
         ('endswith', '实际结果以预期结果结尾'),
