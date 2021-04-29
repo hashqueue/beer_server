@@ -17,8 +17,9 @@ from utils.http_utils.request import run_testcase
 def run_testsuite(testsuite_id, config_id=None, creator=None):
     """
     异步运行测试套件
-    @param testsuite_id:
-    @param config_id:
+    @param creator: 任务创建者
+    @param testsuite_id:测试套件id
+    @param config_id:配置项id
     @return:
     """
     config = None
