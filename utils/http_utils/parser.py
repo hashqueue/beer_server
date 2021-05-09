@@ -63,13 +63,13 @@ def regx_variables(raw_text: Any, variables: dict) -> str:
         for key in variables.keys():
             if key in raw_variable:
                 raw_variable = key
-        if isinstance(variables[raw_variable], str):
-            try:
+        try:
+            if isinstance(variables[raw_variable], str):
                 raw_text = re.sub(r'\$' + raw_variable, variables[raw_variable], raw_text)
-            except KeyError as err:
-                raise ValidationError({raw_text: f"未在项目配置中找到{raw_variable}变量"}, code=400)
-        else:
-            raw_text = variables[raw_variable]
+            else:
+                raw_text = variables[raw_variable]
+        except KeyError as err:
+            raise ValidationError({raw_text: f"未在项目配置中找到{raw_variable}变量, err_detail:{err}"}, code=400)
     return raw_text
 
 
@@ -150,10 +150,10 @@ if __name__ == '__main__':
     # url = "http://$1base_url.cn/sys/$url_path/model/"
     # url = "http://base_url.cn/sys/url_path/model/"
     global_vars = {'base_url': 'www.baidu.com', 'url_path': 'api/v1/auth/projects/', 'username': 'admin1',
-                   'password': '111111', 'age': 21}
+                   'password': '111111', 'age': {"q": 1}}
     # url = regx_variables(raw_text=url, variables=global_vars)
     # print(url)
     # print(get_func_mapping(1))
     # print(regx_functions("""/api/${add(1, 2, name=$admin)}p/"""))
-    print(parse_function_params(params="""1, 3.1415926, "2", http://$base_url/api/v1/, age=$age, name=$username, pass="111111", del=True""",
+    print(parse_function_params(params="""1, 3.1415926, "2", http://$base_url/api/v1/, qqq={'q': 'a', 'count': 1}, age=$age, name=$username, pass="111111", del=True""",
                                 variables=global_vars))
