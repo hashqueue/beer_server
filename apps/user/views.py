@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework import permissions, status
 from rest_framework.generics import RetrieveUpdateAPIView, CreateAPIView
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -8,6 +9,7 @@ from .models import User
 
 
 # Create your views here.
+@extend_schema(tags=['用户登录'])
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
@@ -20,6 +22,7 @@ class MyTokenObtainPairView(TokenObtainPairView):
         return super().post(request, *args, **kwargs)
 
 
+@extend_schema(tags=['用户管理'])
 class GetAndUpdateCurrentLoginUserInfoView(RetrieveUpdateAPIView):
     queryset = User.objects.all().order_by('-id')
     serializer_class = CurrentUserInfoSerializer
@@ -72,6 +75,7 @@ class GetAndUpdateCurrentLoginUserInfoView(RetrieveUpdateAPIView):
         return self.update(request, *args, **kwargs)
 
 
+@extend_schema(tags=['用户注册'])
 class UserRegisterView(CreateAPIView):
     serializer_class = UserRegisterSerializer
 

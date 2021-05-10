@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework import permissions, status
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
@@ -11,12 +12,11 @@ from .tasks import run_testsuite
 
 
 # Create your views here.
-
+@extend_schema(tags=['套件管理'])
 class TestSuitesViewSet(CustomModelViewSet):
     queryset = TestSuite.objects.all().order_by('-id')
     serializer_class = TestSuiteSerializer
     permission_classes = [permissions.IsAuthenticated]
-    my_api_set_tags = ["套件管理"]
 
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user.username, modifier=self.request.user.username)

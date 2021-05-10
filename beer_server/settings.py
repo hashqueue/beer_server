@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'django_filters',
-    'drf_yasg',
+    'drf_spectacular',
     'django_celery_results',
 
     'user.apps.UserConfig',
@@ -59,6 +59,15 @@ INSTALLED_APPS = [
     'config.apps.ConfigConfig',
     'task.apps.TaskConfig'
 ]
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Beer API',
+    'DESCRIPTION': 'beer自动化测试平台接口文档',
+    'VERSION': '1.0.0',
+    'CONTACT': {"email": "1912315910@qq.com"},
+    'LICENSE': {"name": "MIT License"},
+    'SERVERS': [{"url": "http://127.0.0.1:8000"}],
+}
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -71,6 +80,8 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10,
     # 全局配置自定义异常
     'EXCEPTION_HANDLER': 'utils.drf_utils.custom_exception.custom_exception_handler',
+    # 指定后端的schema为drf_spectacular的schema，用来生成接口文档
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 AUTHENTICATION_BACKENDS = [
@@ -79,17 +90,6 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-# swagger接口文档配置
-SWAGGER_SETTINGS = {
-    'SECURITY_DEFINITIONS': {
-        'Bearer': {
-            'type': 'apiKey',
-            'name': 'Authorization',
-            'in': 'header'
-        }
-    },
-    "DEFAULT_AUTO_SCHEMA_CLASS": "utils.drf_utils.custom_swagger_auto_schema.CustomAutoSchema"
-}
 
 # djangorestframework-simplejwt配置
 SIMPLE_JWT = {
