@@ -43,6 +43,7 @@ urlpatterns = [
     path('api/', include('testcase.urls')),
     path('api/', include('config.urls')),
     path('api/', include('task.urls')),
+    path('api/', include('functions.urls')),
     # YOUR PATTERNS
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     # Optional UI:

@@ -3,37 +3,18 @@
 # @Author  : anonymous
 # @File    : parser.py
 # @Software: PyCharm
-# @Description:测试数据解析模块
-import ast
+# @Description: 测试数据解析模块
 import re
 import importlib
 from types import FunctionType
-from typing import Dict, Any
+from typing import Any
 
 from rest_framework.serializers import ValidationError
 
 # 从字符串开始位置匹配该字符串是否以`http(s)://`开头
-from typing_extensions import Text
-
 start_with_http_pattern = r"^http(s)?://"
 # 从字符串开始位置匹配该字符串是否`不`以`//`结尾
 not_end_with_double_slash_pattern = r'.*(?<!//)$'
-
-
-def parse_string_value(str_value: Text) -> Any:
-    """ parse string to number if possible
-    e.g. "123" => 123
-         "12.2" => 12.3
-         "abc" => "abc"
-         "$var" => "$var"
-    """
-    try:
-        return ast.literal_eval(str_value)
-    except ValueError:
-        return str_value
-    except SyntaxError:
-        # e.g. $var, ${func}
-        return str_value
 
 
 def parse_request_url(url_path: str = None) -> str:
@@ -69,7 +50,7 @@ def regx_variables(raw_text: Any, variables: dict) -> str:
             else:
                 raw_text = variables[raw_variable]
         except KeyError as err:
-            raise ValidationError({raw_text: f"未在项目配置中找到{raw_variable}变量, err_detail:{err}"}, code=400)
+            raise ValidationError({raw_text: f"未找到{raw_variable}变量, err_detail: {err}"}, code=400)
     return raw_text
 
 
@@ -86,63 +67,36 @@ def get_func_mapping(project_id):
     @param project_id: 项目id
     @return: dict ===> {"func_name": function obj}
     """
-    imported = importlib.import_module('global_funcs.func_script_' + str(project_id))
+    imported = importlib.import_module('global_funcs.func_script_project' + str(project_id))
     functions_data = {}
     for item in list(filter(is_function, vars(imported).items())):
         functions_data[item[0]] = item[1]
     return functions_data
 
 
-def parse_function_params(params: Text, variables: Dict) -> Dict:
+def regx_functions(content: str, project_id=None):
     """
-    parse function params to args and kwargs.
-    @param variables: 项目级别的全局变量或测试用例级别的全局变量
-    @param params: function param in string
-    @return: dict: function meta dict
-
-            {
-                "args": [],
-                "kwargs": {}
-            }
-    >>> global_vars11 = {'base_url': 'www.baidu.com', 'url_path': 'api/v1/auth/projects/', 'username': 'admin1',
-        'password': '111111'}
-    >>> parse_function_params(params='1, "2", http://$base_url/api/v1/, name=$username, age=$age, pass="111111", del=True', variables=global_vars)
-    >>> {'args': [1, '2', 'http://www.baidu.com/api/v1/'], 'kwargs': {'age': 21, 'name': 'admin1', 'pass': '111111', 'del': True}}
-    """
-    function_meta = {"args": [], "kwargs": {}}
-
-    params_str = params.strip()
-    if params_str == "":
-        return function_meta
-
-    args_list = params_str.split(",")
-    for arg in args_list:
-        arg = arg.strip()
-        if "=" in arg:
-            key, value = arg.split("=")
-            function_meta["kwargs"][key.strip()] = parse_string_value(value.strip())
-            # 如果函数的关键字参数里有字符串的话，判断以下该字符串使用引用了全局变量，有就替换
-            if isinstance(function_meta["kwargs"][key.strip()], str):
-                function_meta["kwargs"][key.strip()] = regx_variables(raw_text=function_meta["kwargs"][key.strip()],
-                                                                      variables=variables)
-        else:
-            function_meta["args"].append(parse_string_value(arg.strip()))
-    # 如果函数的位置参数里有字符串的话，判断以下该字符串使用引用了全局变量，有就替换
-    for index in range(len(function_meta["args"])):
-        if isinstance(function_meta["args"][index], str):
-            function_meta["args"][index] = regx_variables(raw_text=function_meta["args"][index],
-                                                          variables=variables)
-    return function_meta
-
-
-def regx_functions(content: str):
-    """
-    extract all functions from string content, which are in format ${fun()}
+    从字符串内容中提取所有函数，其格式为${func_name(param1, param2, key1=value1)}
+    执行函数并获得返回值，并在content中进行替换为函数的执行后的返回值
+    @param project_id:
     @param content:
     @return:
+    .strip('${').strip('}')
     """
-    need_execute_raw_funcs_list = re.findall(r"\${(\w+)\(([$\w.\-/\s=,]*)\)}", content)
-    return need_execute_raw_funcs_list
+    need_execute_raw_funcs_list = re.findall(r"\${(\w+\([^)]*\))}", content)
+    for raw_func in need_execute_raw_funcs_list:
+        data = {}
+        code = 'from global_funcs.func_script_project' + str(
+            project_id) + ' import *\ncode_execute_result = ' + raw_func
+        try:
+            exec(code, data)
+            if isinstance(data['code_execute_result'], str):
+                content = content.replace('${' + raw_func + '}', data['code_execute_result'])
+            else:
+                content = data['code_execute_result']
+        except Exception as err:
+            raise ValidationError({'函数执行时异常': f"出现异常的函数为{raw_func}, err_detail: {err}"}, code=400)
+    return content
 
 
 if __name__ == '__main__':
@@ -154,6 +108,6 @@ if __name__ == '__main__':
     # url = regx_variables(raw_text=url, variables=global_vars)
     # print(url)
     # print(get_func_mapping(1))
-    # print(regx_functions("""/api/${add(1, 2, name=$admin)}p/"""))
-    print(parse_function_params(params="""1, 3.1415926, "2", http://$base_url/api/v1/, qqq={'q': 'a', 'count': 1}, age=$age, name=$username, pass="111111", del=True""",
-                                variables=global_vars))
+    print(regx_functions("""/api/${get_fullname('李', '世民')}p/${gen_random_string(20)}/速度发${gen_random_string(20)}斯蒂芬/鼎折覆餗"""))
+    print(type(regx_functions("""${add(13,12.58)}""")))
+    print(type(regx_functions("""${add(13,12)}""")))

@@ -57,7 +57,8 @@ INSTALLED_APPS = [
     'testsuite.apps.TestsuiteConfig',
     'testcase.apps.TestcaseConfig',
     'config.apps.ConfigConfig',
-    'task.apps.TaskConfig'
+    'task.apps.TaskConfig',
+    'functions.apps.FunctionsConfig'
 ]
 
 SPECTACULAR_SETTINGS = {

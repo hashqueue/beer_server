@@ -4,16 +4,20 @@
 # @File    : request.py
 # @Software: PyCharm
 # @Description:
+import json
 import time
 from json.decoder import JSONDecodeError
+from typing import Dict
 
 from requests import Session
 from requests.utils import dict_from_cookiejar
 from requests.exceptions import RequestException
 from rest_framework.exceptions import ValidationError
 
-from testcase.models import TestStep, TestStepValidator
-from .parser import regx_variables, parse_request_url
+from functions.models import Function
+from testcase.models import TestStep, TestStepValidator, TestCase
+from testsuite.models import TestSuite
+from .parser import regx_variables, parse_request_url, regx_functions
 from .response import extract_data_with_jmespath, validate_resp_data
 
 
@@ -61,6 +65,9 @@ def handle_global_or_testcase_variables(teststep, variables):
     teststep.url_path = regx_variables(teststep.url_path, variables=variables)
     # 判断url_path是否符合要求
     teststep.url_path = parse_request_url(url_path=teststep.url_path)
+    if teststep.json:
+        json_data = json.dumps(teststep.json)
+        teststep.json = json.loads(regx_variables(json_data, variables=variables))
     if teststep.params:
         for params_item in teststep.params.keys():
             teststep.params[params_item] = regx_variables(teststep.params[params_item], variables=variables)
@@ -75,6 +82,25 @@ def handle_global_or_testcase_variables(teststep, variables):
             teststep.cookies[cookies_item] = regx_variables(teststep.cookies[cookies_item], variables=variables)
 
 
+def handle_global_functions(teststep, project_id):
+    if teststep.json:
+        json_data = json.dumps(teststep.json)
+        teststep.json = json.loads(regx_functions(json_data, project_id=project_id))
+    teststep.url_path = regx_functions(teststep.url_path, project_id=project_id)
+    if teststep.params:
+        for params_item in teststep.params.keys():
+            teststep.params[params_item] = regx_functions(teststep.params[params_item], project_id=project_id)
+    if teststep.data:
+        for data_item in teststep.data.keys():
+            teststep.data[data_item] = regx_functions(teststep.data[data_item], project_id=project_id)
+    if teststep.headers:
+        for headers_item in teststep.headers.keys():
+            teststep.headers[headers_item] = regx_functions(teststep.headers[headers_item], project_id=project_id)
+    if teststep.cookies:
+        for cookies_item in teststep.cookies.keys():
+            teststep.cookies[cookies_item] = regx_functions(teststep.cookies[cookies_item], project_id=project_id)
+
+
 def handle_request_data_before_send_request(teststep, config, testcase_variables):
     """
     测试步骤发起请求前，对数据进行处理
@@ -83,20 +109,41 @@ def handle_request_data_before_send_request(teststep, config, testcase_variables
     @param config:
     @return:
     """
+    # 全局函数
+    testcase_id = teststep.testcase_id
+    testsuite_id = TestCase.objects.get(id=testcase_id).testsuite_id
+    project_id = TestSuite.objects.get(id=testsuite_id).project_id
+    func_queryset = Function.objects.filter(project_id=project_id)
     if config:
         # 全局变量
         global_variables = config.global_variable
-        # 全局函数
-        global_func = config.global_func
-        try:
-            handle_global_or_testcase_variables(teststep=teststep, variables=global_variables)
-        except ValidationError:
-            if testcase_variables != {}:
+        if len(func_queryset) == 1:  # 该测试步骤所在的项目下配置了全局函数
+            try:
+                handle_global_or_testcase_variables(teststep=teststep, variables=global_variables)
+                # 对函数进行调用，并替换为函数的返回值
+                handle_global_functions(teststep=teststep, project_id=project_id)
+            except ValidationError:
+                if testcase_variables != {}:
+                    # 测试用例变量的优先级>全局变量：测试用例变量会覆盖全局变量
+                    handle_global_or_testcase_variables(teststep=teststep, variables=testcase_variables)
+                    handle_global_functions(teststep=teststep, project_id=project_id)
+        else:
+            try:
+                handle_global_or_testcase_variables(teststep=teststep, variables=global_variables)
+            except ValidationError:
+                if testcase_variables != {}:
+                    # 测试用例变量的优先级>全局变量：测试用例变量会覆盖全局变量
+                    handle_global_or_testcase_variables(teststep=teststep, variables=testcase_variables)
+    else:
+        # 未使用配置时，需要判断是否有引用了测试用例级别的变量
+        if testcase_variables != {}:
+            if len(func_queryset) == 1:  # 该测试步骤所在的项目下配置了全局函数
                 # 测试用例变量的优先级>全局变量：测试用例变量会覆盖全局变量
                 handle_global_or_testcase_variables(teststep=teststep, variables=testcase_variables)
-    if testcase_variables != {}:
-        # 测试用例变量的优先级>全局变量：测试用例变量会覆盖全局变量
-        handle_global_or_testcase_variables(teststep=teststep, variables=testcase_variables)
+                handle_global_functions(teststep=teststep, project_id=project_id)
+            else:
+                # 测试用例变量的优先级>全局变量：测试用例变量会覆盖全局变量
+                handle_global_or_testcase_variables(teststep=teststep, variables=testcase_variables)
     # 发送请求时：判断url_path是否符合要求
     teststep.url_path = parse_request_url(url_path=teststep.url_path)
 
