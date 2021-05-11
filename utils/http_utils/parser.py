@@ -32,9 +32,10 @@ def parse_request_url(url_path: str = None) -> str:
         raise ValidationError({url_path: "测试步骤中的url_path未以`http(s)://`开头"}, code=400)
 
 
-def regx_variables(raw_text: Any, variables: dict) -> str:
+def regx_variables(raw_text: Any, variables: dict, is_json=False) -> str:
     """
     对请求数据中引用了全局变量或测试用例变量的数据进行解析，然后替换为全局变量或测试用例变量中变量的具体的值
+    @param is_json:
     @param variables: 可选的全局变量或测试用例变量
     @param raw_text: 请求数据中需要进行解析替换为全局变量或测试用例变量值的数据
     @return: 已完成替换的请求数据
@@ -45,10 +46,14 @@ def regx_variables(raw_text: Any, variables: dict) -> str:
             if key in raw_variable:
                 raw_variable = key
         try:
-            if isinstance(variables[raw_variable], str):
-                raw_text = re.sub(r'\$' + raw_variable, variables[raw_variable], raw_text)
+            # 如果json格式请求参数中引用了全局函数，需要判断具体参数的类型("12" ===> 12)，form-data和params会自动将"12"转换为12
+            if is_json:
+                if isinstance(variables[raw_variable], int) or isinstance(variables[raw_variable], float):
+                    raw_text = raw_text.replace('"$' + raw_variable + '"', str(variables[raw_variable]))
+                else:
+                    raw_text = re.sub(r'\$' + raw_variable, str(variables[raw_variable]), raw_text)
             else:
-                raw_text = variables[raw_variable]
+                raw_text = re.sub(r'\$' + raw_variable, str(variables[raw_variable]), raw_text)
         except KeyError as err:
             raise ValidationError({raw_text: f"未找到{raw_variable}变量, err_detail: {err}"}, code=400)
     return raw_text
@@ -74,10 +79,11 @@ def get_func_mapping(project_id):
     return functions_data
 
 
-def regx_functions(content: str, project_id=None):
+def regx_functions(content: str, project_id=None, is_json=False):
     """
     从字符串内容中提取所有函数，其格式为${func_name(param1, param2, key1=value1)}
     执行函数并获得返回值，并在content中进行替换为函数的执行后的返回值
+    @param is_json:
     @param project_id:
     @param content:
     @return:
@@ -90,10 +96,14 @@ def regx_functions(content: str, project_id=None):
             project_id) + ' import *\ncode_execute_result = ' + raw_func
         try:
             exec(code, data)
-            if isinstance(data['code_execute_result'], str):
-                content = content.replace('${' + raw_func + '}', data['code_execute_result'])
+            # 如果json格式请求参数中引用了全局函数，需要判断具体参数的类型("12" ===> 12)，form-data和params会自动将"12"转换为12
+            if is_json:
+                if isinstance(data['code_execute_result'], int) or isinstance(data['code_execute_result'], float):
+                    content = content.replace('"${' + raw_func + '}"', str(data['code_execute_result']))
+                else:
+                    content = content.replace('${' + raw_func + '}', str(data['code_execute_result']))
             else:
-                content = data['code_execute_result']
+                content = content.replace('${' + raw_func + '}', str(data['code_execute_result']))
         except Exception as err:
             raise ValidationError({'函数执行时异常': f"出现异常的函数为{raw_func}, err_detail: {err}"}, code=400)
     return content
@@ -108,6 +118,4 @@ if __name__ == '__main__':
     # url = regx_variables(raw_text=url, variables=global_vars)
     # print(url)
     # print(get_func_mapping(1))
-    print(regx_functions("""/api/${get_fullname('李', '世民')}p/${gen_random_string(20)}/速度发${gen_random_string(20)}斯蒂芬/鼎折覆餗"""))
-    print(type(regx_functions("""${add(13,12.58)}""")))
-    print(type(regx_functions("""${add(13,12)}""")))
+    print(regx_functions("""${add(3,5)}""", project_id=3))

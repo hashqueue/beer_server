@@ -56,9 +56,9 @@ def send_request(teststep, timeout=120):
 def handle_global_or_testcase_variables(teststep, variables):
     """
     对测试步骤中引用的全局变量(1.项目级别配置的全局变量 2.测试用例级别配置的全局变量===>来源于对测试步骤响应结果的提取)进行解析和替换
-    @param teststep:
-    @param variables:
-    @return:
+    @param teststep: 测试步骤对象
+    @param variables: 全局函数 ===> dict
+    @return: 直接修改测试步骤对象，无返回值
     """
     # 批量替换测试步骤中引用的全局变量
     # 对请求的url_path进行解析替换,如果没有可用全局变量,则返回原始值
@@ -67,38 +67,44 @@ def handle_global_or_testcase_variables(teststep, variables):
     teststep.url_path = parse_request_url(url_path=teststep.url_path)
     if teststep.json:
         json_data = json.dumps(teststep.json)
-        teststep.json = json.loads(regx_variables(json_data, variables=variables))
+        teststep.json = json.loads(regx_variables(json_data, variables=variables, is_json=True))
     if teststep.params:
-        for params_item in teststep.params.keys():
-            teststep.params[params_item] = regx_variables(teststep.params[params_item], variables=variables)
+        params_to_json_data = json.dumps(teststep.params)
+        teststep.params = json.loads(regx_variables(params_to_json_data, variables=variables))
     if teststep.data:
-        for data_item in teststep.data.keys():
-            teststep.data[data_item] = regx_variables(teststep.data[data_item], variables=variables)
+        data_to_json_data = json.dumps(teststep.data)
+        teststep.data = json.loads(regx_variables(data_to_json_data, variables=variables))
     if teststep.headers:
-        for headers_item in teststep.headers.keys():
-            teststep.headers[headers_item] = regx_variables(teststep.headers[headers_item], variables=variables)
+        headers_to_json_data = json.dumps(teststep.headers)
+        teststep.headers = json.loads(regx_variables(headers_to_json_data, variables=variables))
     if teststep.cookies:
-        for cookies_item in teststep.cookies.keys():
-            teststep.cookies[cookies_item] = regx_variables(teststep.cookies[cookies_item], variables=variables)
+        cookies_to_json_data = json.dumps(teststep.cookies)
+        teststep.cookies = json.loads(regx_variables(cookies_to_json_data, variables=variables))
 
 
 def handle_global_functions(teststep, project_id):
+    """
+    对测试步骤中引用的全局函数进行解析和替换
+    @param teststep: 测试步骤对象
+    @param project_id: 全局函数所绑定的项目id
+    @return: 直接修改测试步骤对象，无返回值
+    """
+    teststep.url_path = regx_functions(teststep.url_path, project_id=project_id)
     if teststep.json:
         json_data = json.dumps(teststep.json)
-        teststep.json = json.loads(regx_functions(json_data, project_id=project_id))
-    teststep.url_path = regx_functions(teststep.url_path, project_id=project_id)
+        teststep.json = json.loads(regx_functions(json_data, project_id=project_id, is_json=True))
     if teststep.params:
-        for params_item in teststep.params.keys():
-            teststep.params[params_item] = regx_functions(teststep.params[params_item], project_id=project_id)
+        params_to_json_data = json.dumps(teststep.params)
+        teststep.params = json.loads(regx_functions(params_to_json_data, project_id=project_id))
     if teststep.data:
-        for data_item in teststep.data.keys():
-            teststep.data[data_item] = regx_functions(teststep.data[data_item], project_id=project_id)
+        data_to_json_data = json.dumps(teststep.data)
+        teststep.data = json.loads(regx_functions(data_to_json_data, project_id=project_id))
     if teststep.headers:
-        for headers_item in teststep.headers.keys():
-            teststep.headers[headers_item] = regx_functions(teststep.headers[headers_item], project_id=project_id)
+        headers_to_json_data = json.dumps(teststep.headers)
+        teststep.headers = json.loads(regx_functions(headers_to_json_data, project_id=project_id))
     if teststep.cookies:
-        for cookies_item in teststep.cookies.keys():
-            teststep.cookies[cookies_item] = regx_functions(teststep.cookies[cookies_item], project_id=project_id)
+        cookies_to_json_data = json.dumps(teststep.cookies)
+        teststep.cookies = json.loads(regx_functions(cookies_to_json_data, project_id=project_id))
 
 
 def handle_request_data_before_send_request(teststep, config, testcase_variables):
