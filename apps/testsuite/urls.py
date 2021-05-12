@@ -10,6 +10,6 @@ from rest_framework import routers
 from .views import TestSuitesViewSet
 
 router = routers.DefaultRouter()
-router.register(prefix=r'testsuites', viewset=TestSuitesViewSet)
+router.register(prefix=r'testsuites', viewset=TestSuitesViewSet, basename='testsuite')
 urlpatterns = [path('', include(router.urls)), ]
 

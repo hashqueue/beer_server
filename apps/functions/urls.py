@@ -10,5 +10,5 @@ from rest_framework import routers
 from .views import FunctionsViewSet
 
 router = routers.DefaultRouter()
-router.register(prefix=r'functions', viewset=FunctionsViewSet)
+router.register(prefix=r'functions', viewset=FunctionsViewSet, basename='function')
 urlpatterns = [path('', include(router.urls)), ]

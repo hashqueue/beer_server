@@ -10,6 +10,7 @@ from rest_framework import routers
 from .views import ProjectsViewSet
 
 router = routers.DefaultRouter()
-router.register(prefix=r'projects', viewset=ProjectsViewSet)
+# 如果视图类中没有指定queryset，则需要手动指定basename
+router.register(prefix=r'projects', viewset=ProjectsViewSet, basename='project')
 urlpatterns = [path('', include(router.urls)), ]
 

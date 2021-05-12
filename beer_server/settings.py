@@ -83,6 +83,8 @@ REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'utils.drf_utils.custom_exception.custom_exception_handler',
     # 指定后端的schema为drf_spectacular的schema，用来生成接口文档
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    # 指定drf使用的过滤后端
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 }
 
 AUTHENTICATION_BACKENDS = [
@@ -186,7 +188,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 # Celery配置选项
 # 配置时区,使用与django项目相同的时区设置

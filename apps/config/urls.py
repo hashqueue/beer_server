@@ -10,5 +10,5 @@ from rest_framework import routers
 from .views import ConfigsViewSet
 
 router = routers.DefaultRouter()
-router.register(prefix=r'configs', viewset=ConfigsViewSet)
+router.register(prefix=r'configs', viewset=ConfigsViewSet, basename='config')
 urlpatterns = [path('', include(router.urls)), ]

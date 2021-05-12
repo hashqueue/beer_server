@@ -119,11 +119,11 @@ def handle_request_data_before_send_request(teststep, config, testcase_variables
     testcase_id = teststep.testcase_id
     testsuite_id = TestCase.objects.get(id=testcase_id).testsuite_id
     project_id = TestSuite.objects.get(id=testsuite_id).project_id
-    func_queryset = Function.objects.filter(project_id=project_id)
+    func_queryset_length = Function.objects.filter(project_id=project_id).count()
     if config:
         # 全局变量
         global_variables = config.global_variable
-        if len(func_queryset) == 1:  # 该测试步骤所在的项目下配置了全局函数
+        if func_queryset_length == 1:  # 该测试步骤所在的项目下配置了全局函数
             try:
                 handle_global_or_testcase_variables(teststep=teststep, variables=global_variables)
                 # 对函数进行调用，并替换为函数的返回值
@@ -143,7 +143,7 @@ def handle_request_data_before_send_request(teststep, config, testcase_variables
     else:
         # 未使用配置时，需要判断是否有引用了测试用例级别的变量
         if testcase_variables != {}:
-            if len(func_queryset) == 1:  # 该测试步骤所在的项目下配置了全局函数
+            if func_queryset_length == 1:  # 该测试步骤所在的项目下配置了全局函数
                 # 测试用例变量的优先级>全局变量：测试用例变量会覆盖全局变量
                 handle_global_or_testcase_variables(teststep=teststep, variables=testcase_variables)
                 handle_global_functions(teststep=teststep, project_id=project_id)

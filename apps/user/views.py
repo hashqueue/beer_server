@@ -53,7 +53,7 @@ class GetAndUpdateCurrentLoginUserInfoView(RetrieveUpdateAPIView):
         instance = self.get_object()
         # 1.当前请求该接口的用户是要查看的用户数据对象的owner时,才会返回用户数据
         # 2.当前请求该接口的用户的is_staff为1时才会返回用户的数据
-        if instance.id == request.user.id or request.user.is_staff == 1:
+        if instance.id == request.user.id or request.user.is_superuser is True:
             serializer = self.get_serializer(instance)
             return JsonResponse(data=serializer.data, msg='获取用户信息成功', code=20000, status=status.HTTP_200_OK)
         return JsonResponse(data=[], msg='您无权限查看该用户的信息', code=40003, status=status.HTTP_403_FORBIDDEN)
@@ -61,7 +61,7 @@ class GetAndUpdateCurrentLoginUserInfoView(RetrieveUpdateAPIView):
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
-        if instance.id == request.user.id or request.user.is_staff == 1:
+        if instance.id == request.user.id or request.user.is_superuser is True:
             serializer = self.get_serializer(instance, data=request.data, partial=partial)
             serializer.is_valid(raise_exception=True)
             self.perform_update(serializer)
