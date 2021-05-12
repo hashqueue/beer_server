@@ -8,13 +8,14 @@ from .serializers import FunctionSerializer
 from beer_server.settings import BASE_DIR
 from .models import Function
 from utils.drf_utils.custom_model_view_set import CustomModelViewSet
+from utils.drf_utils.custom_permissions import IsObjectCreatorOrModifierInRequestUserGroups
 
 
 # Create your views here.
 @extend_schema(tags=['全局函数管理'])
 class FunctionsViewSet(CustomModelViewSet):
     serializer_class = FunctionSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsObjectCreatorOrModifierInRequestUserGroups]
 
     def perform_create(self, serializer):
         project_id = self.request.data.get('project')

@@ -58,7 +58,8 @@ INSTALLED_APPS = [
     'testcase.apps.TestcaseConfig',
     'config.apps.ConfigConfig',
     'task.apps.TaskConfig',
-    'functions.apps.FunctionsConfig'
+    'functions.apps.FunctionsConfig',
+    'group.apps.GroupConfig'
 ]
 
 SPECTACULAR_SETTINGS = {

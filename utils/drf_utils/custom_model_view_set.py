@@ -81,3 +81,23 @@ class MyListRetrieveDestroyModelViewSet(mixins.RetrieveModelMixin,
 
         serializer = self.get_serializer(queryset, many=True)
         return JsonResponse(data=serializer.data, msg='success', code=20000, status=status.HTTP_200_OK)
+
+
+class MyListRetrieveModelViewSet(mixins.RetrieveModelMixin,
+                                 mixins.ListModelMixin,
+                                 GenericViewSet):
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return JsonResponse(data=serializer.data, msg='success', code=20000, status=status.HTTP_200_OK)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return JsonResponse(data=serializer.data, msg='success', code=20000, status=status.HTTP_200_OK)

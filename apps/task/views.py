@@ -1,4 +1,3 @@
-from django.db.models import Q
 from drf_spectacular.utils import extend_schema
 from rest_framework import permissions
 from django_celery_results.models import TaskResult

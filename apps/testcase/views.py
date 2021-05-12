@@ -10,13 +10,14 @@ from .serializers import TestCaseSerializer, RunTestCaseSerializer
 from .models import TestCase
 from utils.drf_utils.custom_model_view_set import CustomModelViewSet
 from utils.http_utils.request import run_testcase
+from utils.drf_utils.custom_permissions import IsObjectCreatorOrModifierInRequestUserGroups
 
 
 # Create your views here.
 @extend_schema(tags=['用例管理'])
 class TestCasesViewSet(CustomModelViewSet):
     serializer_class = TestCaseSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsObjectCreatorOrModifierInRequestUserGroups]
 
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user.username, modifier=self.request.user.username)

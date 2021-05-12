@@ -10,13 +10,14 @@ from .serializers import TestSuiteSerializer, RunTestSuiteSerializer
 from .models import TestSuite
 from utils.drf_utils.custom_model_view_set import CustomModelViewSet
 from .tasks import run_testsuite
+from utils.drf_utils.custom_permissions import IsObjectCreatorOrModifierInRequestUserGroups
 
 
 # Create your views here.
 @extend_schema(tags=['套件管理'])
 class TestSuitesViewSet(CustomModelViewSet):
     serializer_class = TestSuiteSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, IsObjectCreatorOrModifierInRequestUserGroups]
 
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user.username, modifier=self.request.user.username)
