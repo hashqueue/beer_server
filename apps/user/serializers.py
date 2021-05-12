@@ -6,9 +6,7 @@
 # @Description:
 import re
 
-from django.contrib.auth.models import Group
 from rest_framework import serializers
-from rest_framework.generics import get_object_or_404
 from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -24,8 +22,7 @@ class CurrentUserInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        exclude = ('is_superuser', 'is_active',
-                   'first_name', 'last_name', 'last_login', 'groups', 'user_permissions')
+        exclude = ('is_superuser', 'is_active', 'first_name', 'last_name', 'last_login', 'user_permissions')
         read_only_fields = ('id', 'avatar', 'is_staff', 'date_joined')
         extra_kwargs = {
             'phone': {
@@ -38,6 +35,9 @@ class CurrentUserInfoSerializer(serializers.ModelSerializer):
                 # 添加手机号`重复`校验
                 'validators': [UniqueValidator(queryset=User.objects.all(), message='此手机号已被使用')],
 
+            },
+            'groups': {
+                'required': True
             },
             'username': {
                 'label': '用户名',
@@ -96,13 +96,23 @@ class CurrentUserInfoSerializer(serializers.ModelSerializer):
         return value
 
     def update(self, instance, validated_data):
+        user_group_objs = validated_data.pop('groups')
+        user_group_ids = [user_group_obj.id for user_group_obj in user_group_objs]
         if validated_data.get('password'):
             userinfo_instance = super().update(instance, validated_data)
             userinfo_instance.set_password(validated_data['password'])
             userinfo_instance.save()
+            # 清空多对多对象
+            userinfo_instance.groups.clear()
+            # 创建user和user_group的关系
+            userinfo_instance.groups.add(*user_group_ids)
             return userinfo_instance
         else:
             userinfo_instance = super().update(instance, validated_data)
+            # 清空多对多对象
+            userinfo_instance.groups.clear()
+            # 创建user和user_group的关系
+            userinfo_instance.groups.add(*user_group_ids)
             return userinfo_instance
 
 
@@ -123,7 +133,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'password', 'email', 'password_confirm', 'groups')
+        fields = ('id', 'username', 'password', 'email', 'password_confirm')
         extra_kwargs = {
             'username': {
                 'label': '用户名',
@@ -143,10 +153,6 @@ class UserRegisterSerializer(serializers.ModelSerializer):
                 'allow_blank': False,
                 # 添加邮箱重复校验
                 'validators': [UniqueValidator(queryset=User.objects.all(), message='此邮箱已注册')],
-            },
-            'groups': {
-                'required': True,
-                'write_only': True
             },
             'password': {
                 'label': '密码',
@@ -171,12 +177,8 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # 移除数据库模型类中不存在的字段
         validated_data.pop('password_confirm')
-        user_group_objs = validated_data.pop('groups')
-        user_group_ids = [user_group_obj.id for user_group_obj in user_group_objs]
         # 创建用户实例
         user_instance = User.objects.create_user(**validated_data)
-        # 创建user和user_group的关系
-        user_instance.groups.add(*user_group_ids)
         return user_instance
 
 

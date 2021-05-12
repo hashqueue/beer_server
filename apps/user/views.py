@@ -70,10 +70,6 @@ class GetAndUpdateCurrentLoginUserInfoView(RetrieveUpdateAPIView):
             return JsonResponse(data=serializer.data, msg='修改用户信息成功', code=20000, status=status.HTTP_200_OK)
         return JsonResponse(data=[], msg='您无权限修改该用户的信息', code=40003, status=status.HTTP_403_FORBIDDEN)
 
-    def partial_update(self, request, *args, **kwargs):
-        kwargs['partial'] = True
-        return self.update(request, *args, **kwargs)
-
 
 @extend_schema(tags=['用户注册'])
 class UserRegisterView(CreateAPIView):
