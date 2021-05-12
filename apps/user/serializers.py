@@ -5,7 +5,10 @@
 # @Software: PyCharm
 # @Description:
 import re
+
+from django.contrib.auth.models import Group
 from rest_framework import serializers
+from rest_framework.generics import get_object_or_404
 from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -120,7 +123,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'password', 'email', 'password_confirm')
+        fields = ('id', 'username', 'password', 'email', 'password_confirm', 'groups')
         extra_kwargs = {
             'username': {
                 'label': '用户名',
@@ -136,9 +139,14 @@ class UserRegisterSerializer(serializers.ModelSerializer):
                 'label': '邮箱',
                 'help_text': '邮箱',
                 'required': True,
+                # 对空字符串进行校验：False表示不接受空字符串
                 'allow_blank': False,
                 # 添加邮箱重复校验
                 'validators': [UniqueValidator(queryset=User.objects.all(), message='此邮箱已注册')],
+            },
+            'groups': {
+                'required': True,
+                'write_only': True
             },
             'password': {
                 'label': '密码',
@@ -163,8 +171,13 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # 移除数据库模型类中不存在的字段
         validated_data.pop('password_confirm')
-        instance = User.objects.create_user(**validated_data)
-        return instance
+        user_group_objs = validated_data.pop('groups')
+        user_group_ids = [user_group_obj.id for user_group_obj in user_group_objs]
+        # 创建用户实例
+        user_instance = User.objects.create_user(**validated_data)
+        # 创建user和user_group的关系
+        user_instance.groups.add(*user_group_ids)
+        return user_instance
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):

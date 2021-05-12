@@ -10,6 +10,7 @@ from utils.drf_utils.custom_model_view_set import MyListRetrieveDestroyModelView
 # Create your views here.
 @extend_schema(tags=['测试任务管理'])
 class TasksViewSet(MyListRetrieveDestroyModelViewSet):
+    queryset = TaskResult.objects.none()  # 无效变量，纯粹是为了接口文档不报错
     serializer_class = TaskSerializer
     permission_classes = [permissions.IsAuthenticated]
 
