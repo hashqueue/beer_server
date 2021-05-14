@@ -77,6 +77,7 @@ class CurrentUserInfoSerializer(serializers.ModelSerializer):
                 'label': '密码',
                 'help_text': '密码',
                 'write_only': True,
+                'required': False,
                 'min_length': 6,
                 'max_length': 128,
                 'error_messages': {
