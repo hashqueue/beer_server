@@ -30,7 +30,7 @@ class TestStep(models.Model):
     ]
     teststep_name = models.CharField(max_length=128, verbose_name='测试步骤名称', help_text='测试步骤名称')
     method = models.CharField(max_length=10, choices=METHOD_CHOICES, verbose_name='请求方法', help_text='请求方法')
-    url_path = models.CharField(max_length=256, verbose_name='请求路径', help_text='请求路径')
+    url_path = models.CharField(max_length=512, verbose_name='请求路径', help_text='请求路径')
     desc = models.CharField(max_length=512, blank=True, default='', verbose_name='用例描述', help_text='用例描述')
     json = models.JSONField(null=True, blank=True, verbose_name='请求体中json类型参数', help_text='请求体中json类型参数')
     params = models.JSONField(null=True, blank=True, verbose_name='查询字符串参数', help_text='查询字符串参数')

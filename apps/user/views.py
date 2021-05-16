@@ -13,6 +13,31 @@ from .models import User
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
+    @extend_schema(
+        responses={
+            200: {
+                "type": "object",
+                "properties": {
+                    "code": {"type": "integer"}, "message": {"type": "string"},
+                    "data": {"type": "object",
+                             "properties": {
+                                 "refresh": {"type": "string"},
+                                 "access": {"type": "string"},
+                                 "user_id": {"type": "integer"},
+                             }}
+                },
+                "example": {
+                    "code": 20000,
+                    "message": "登录成功",
+                    "data": {
+                        "refresh": "e.g. eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.xxx",
+                        "access": "e.g. eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.xxx",
+                        "user_id": 1
+                    }
+                },
+            },
+        },
+    )
     def post(self, request, *args, **kwargs):
         """
         用户登录

@@ -185,12 +185,6 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
-    def update(self, instance, validated_data):
-        super().update(instance, validated_data)
-
-    def create(self, validated_data):
-        super().create(validated_data)
-
     def validate(self, attrs):
         """
         重写validate方法, 添加user_id字段

@@ -20,10 +20,12 @@ class MyPageNumberPagination(PageNumberPagination):
     page_size_query_description = '每页几条'
 
     def get_paginated_response(self, data):
-        '''
+        """
         重写父类的get_paginated_response()方法
         在分页后的数据构成的响应体中添加total_pages(总共分了多少页)和current_page_num(当前所在第几页)字段
-        '''
+        @param data:
+        @return:
+        """
         # 调用父类中的get_paginated_response()方法获得dict类型返回值，再进行定制
         response = super().get_paginated_response(data)
         response.data['total_pages'] = self.page.paginator.num_pages

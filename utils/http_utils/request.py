@@ -35,7 +35,7 @@ def send_request(teststep, timeout=120):
         start_timestamp = time.time()
         response = Session().request(**request_data, timeout=timeout)
         # 计算一个请求的耗时(ms)
-        response_time_ms = round((time.time() - start_timestamp) * 1000, 2)
+        response_time_ms = str(round((time.time() - start_timestamp) * 1000, 2)) + 'ms'
         try:
             response.json()
             return {"response_status_code": response.status_code, "response_headers": dict(response.headers),
@@ -220,10 +220,11 @@ def run_testcase(testcase, config=None):
     # testcase_variables：测试用例层面的全局变量 ===> 来源于测试步骤中的提取变量
     testcase_variables = {}
     teststeps = TestStep.objects.filter(testcase_id=testcase.id)
-    testcase_resp_datas = {}
+    testcase_resp_datas = []
     if len(teststeps) == 0:
         raise ValidationError({'Error': '测试用例的测试步骤不能为空'}, code=400)
     for teststep in teststeps:
         teststep_resp_data = run_teststep(teststep, config, testcase_variables)
-        testcase_resp_datas['teststep_' + str(teststep.id)] = teststep_resp_data
+        teststep_resp_data['teststep_id'] = teststep.id
+        testcase_resp_datas.append(teststep_resp_data)
     return testcase_resp_datas
