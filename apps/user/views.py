@@ -52,7 +52,6 @@ class GetAndUpdateCurrentLoginUserInfoView(RetrieveUpdateAPIView):
     queryset = User.objects.all().order_by('-id')
     serializer_class = CurrentUserInfoSerializer
     permission_classes = [permissions.IsAuthenticated]
-    my_api_set_tags = ["用户信息管理"]
 
     def get(self, request, *args, **kwargs):
         """

@@ -38,7 +38,7 @@ def run_testsuite(testsuite_id, config_id=None, creator=None):
         validate_flag = []
         try:
             res_data = run_testcase(testcase=testcase, config=config)
-            for teststep_res_data_value in res_data.values():
+            for teststep_res_data_value in res_data:
                 if teststep_res_data_value.get('teststep_validators_results', False):  # 判断是否有断言结果
                     for validate_result in teststep_res_data_value.get('teststep_validators_results'):
                         validate_flag.append(validate_result.get('validator_result').get('status'))
@@ -48,11 +48,11 @@ def run_testsuite(testsuite_id, config_id=None, creator=None):
             else:
                 summary_data['success']['count'] += 1
                 summary_data['success']['testcase_ids'].append(testcase.id)
-            run_testcases_result.append({'testcase_' + str(testcase.id): res_data})
+            run_testcases_result.append({'testcase_id': testcase.id, "data": res_data})
         except ValidationError as err:
             summary_data['exception']['count'] += 1
             summary_data['exception']['testcase_ids'].append(testcase.id)
-            run_testcases_result.append({'testcase_' + str(testcase.id): str(err)})
+            run_testcases_result.append({'testcase_id': testcase.id, "exception": str(err)})
     run_testsuite_result['summary_data'] = summary_data
     run_testsuite_result['run_testcases_result'] = run_testcases_result
     return run_testsuite_result

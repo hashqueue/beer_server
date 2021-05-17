@@ -4,6 +4,7 @@
 # @File    : tasks.py
 # @Software: PyCharm
 # @Description:
+
 from celery import shared_task
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
@@ -61,7 +62,7 @@ def run_project(project_id, config_id=None, creator=None):
             validate_flag = []
             try:
                 res_data = run_testcase(testcase=testcase, config=config)
-                for teststep_res_data_value in res_data.values():
+                for teststep_res_data_value in res_data:
                     if teststep_res_data_value.get('teststep_validators_results', False):  # 判断是否有断言结果
                         for validate_result in teststep_res_data_value.get('teststep_validators_results'):
                             validate_flag.append(validate_result.get('validator_result').get('status'))
@@ -77,15 +78,16 @@ def run_project(project_id, config_id=None, creator=None):
                     summary_data['testcase_info']['success']['testcase_ids'].append(testcase.id)
                     testsuite_summary_data['success']['count'] += 1
                     testsuite_summary_data['success']['testcase_ids'].append(testcase.id)
-                run_testcases_result.append({'testcase_' + str(testcase.id): res_data})
+                run_testcases_result.append({'testcase_id': testcase.id, 'data': res_data})
             except ValidationError as err:
                 summary_data['testcase_info']['exception']['count'] += 1
                 summary_data['testcase_info']['exception']['testcase_ids'].append(testcase.id)
                 testsuite_summary_data['exception']['count'] += 1
                 testsuite_summary_data['exception']['testcase_ids'].append(testcase.id)
-                run_testcases_result.append({'testcase_' + str(testcase.id): str(err)})
+                run_testcases_result.append({'testcase_id': testcase.id, 'exception': str(err)})
         run_testsuite_result['summary_data'] = testsuite_summary_data
         run_testsuite_result['run_testcases_result'] = run_testcases_result
+        run_testsuite_result['testsuite_id'] = testsuite.id
         run_testsuites_result.append(run_testsuite_result)
     run_project_result['summary_data'] = summary_data
     run_project_result['run_testsuites_result'] = run_testsuites_result
