@@ -29,12 +29,12 @@ def run_project(project_id, config_id=None, creator=None):
         config = get_object_or_404(Config, pk=config_id)
     testsuites = TestSuite.objects.filter(project_id=project_id)
     if len(testsuites) == 0:
-        return '运行项目时,项目中的测试用例不能为空'
+        return {'error': '运行项目时,项目中的测试用例不能为空'}
     testcases_all = []
     for testsuite in testsuites:
         testcases = TestCase.objects.filter(testsuite_id=testsuite.id)
         if len(testcases) == 0:
-            return '运行测试套件时,测试套件中测试用例不能为空'
+            return {'error': '运行测试套件时,测试套件中测试用例不能为空'}
         testcases_all.extend(testcases)
     run_project_result = {}
     run_testsuites_result = []

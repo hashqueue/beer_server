@@ -27,7 +27,7 @@ def run_testsuite(testsuite_id, config_id=None, creator=None):
         config = get_object_or_404(Config, pk=config_id)
     testcases = TestCase.objects.filter(testsuite_id=testsuite_id)
     if len(testcases) == 0:
-        return '测试套件中测试用例不能为空'
+        return {'error': '运行测试套件时,测试套件中测试用例不能为空'}
     run_testsuite_result = {}
     run_testcases_result = []
     # 汇总数据
