@@ -11,6 +11,9 @@ from .models import TestSuite
 
 
 class TestSuiteSerializer(BaseModelSerializer):
+    project_name = serializers.CharField(source='project.project_name', required=False, read_only=True,
+                                         help_text='所属项目的名称')
+
     class Meta:
         model = TestSuite
         fields = '__all__'

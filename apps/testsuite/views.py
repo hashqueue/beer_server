@@ -18,6 +18,7 @@ from utils.drf_utils.custom_permissions import IsObjectCreatorOrModifierInReques
 class TestSuitesViewSet(CustomModelViewSet):
     serializer_class = TestSuiteSerializer
     permission_classes = [permissions.IsAuthenticated, IsObjectCreatorOrModifierInRequestUserGroups]
+    filterset_fields = ['testsuite_name', 'testsuite_desc', 'creator', 'modifier']
 
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user.username, modifier=self.request.user.username)
