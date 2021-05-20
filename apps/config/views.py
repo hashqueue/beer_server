@@ -13,7 +13,7 @@ from utils.drf_utils.custom_permissions import IsObjectCreatorOrModifierInReques
 class ConfigsViewSet(CustomModelViewSet):
     serializer_class = ConfigSerializer
     permission_classes = [permissions.IsAuthenticated, IsObjectCreatorOrModifierInRequestUserGroups]
-    filterset_fields = ['config_name', 'config_desc', 'creator', 'modifier']
+    filterset_fields = ['config_name', 'config_desc', 'creator', 'modifier', 'project']
 
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user.username, modifier=self.request.user.username)
