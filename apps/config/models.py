@@ -9,7 +9,7 @@ from utils.django_utils.base_model import BaseModel
 class Config(BaseModel):
     config_name = models.CharField(max_length=150, verbose_name='配置名称', help_text='配置名称')
     config_desc = models.CharField(max_length=256, blank=True, default='', verbose_name='配置描述', help_text='配置描述')
-    global_variable = models.JSONField(null=True, blank=True, verbose_name='全局变量', help_text='全局变量')
+    global_variable = models.JSONField(verbose_name='全局变量', help_text='全局变量')
     project = models.ForeignKey(to=Project, on_delete=models.CASCADE, verbose_name='所属项目', help_text='所属项目')
 
     class Meta:

@@ -7,7 +7,6 @@
 import json
 import time
 from json.decoder import JSONDecodeError
-from typing import Dict
 
 from requests import Session
 from requests.utils import dict_from_cookiejar
