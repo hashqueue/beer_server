@@ -16,6 +16,7 @@ from utils.drf_utils.custom_permissions import IsObjectCreatorOrModifierInReques
 class FunctionsViewSet(CustomModelViewSet):
     serializer_class = FunctionSerializer
     permission_classes = [permissions.IsAuthenticated, IsObjectCreatorOrModifierInRequestUserGroups]
+    filterset_fields = ['function_name', 'function_desc', 'creator', 'modifier', 'project']
 
     def perform_create(self, serializer):
         project_id = self.request.data.get('project')
