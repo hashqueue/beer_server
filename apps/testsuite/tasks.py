@@ -31,7 +31,7 @@ def run_testsuite(testsuite_id, config_id=None, creator=None):
     run_testsuite_result = {}
     run_testcases_result = []
     # 汇总数据
-    summary_data = {'creator': creator, 'count': len(testcases), 'success': {'count': 0, 'testcase_ids': []},
+    summary_data = {'status': True, 'count': len(testcases), 'success': {'count': 0, 'testcase_ids': []},
                     'exception': {'count': 0, 'testcase_ids': []},
                     'failure': {'count': 0, 'testcase_ids': []}}
     for testcase in testcases:
@@ -45,11 +45,15 @@ def run_testsuite(testsuite_id, config_id=None, creator=None):
             if False in validate_flag:
                 summary_data['failure']['count'] += 1
                 summary_data['failure']['testcase_ids'].append(testcase.id)
+                if summary_data['status'] is True:
+                    summary_data['status'] = False
             else:
                 summary_data['success']['count'] += 1
                 summary_data['success']['testcase_ids'].append(testcase.id)
             run_testcases_result.append({'testcase_id': testcase.id, "data": res_data})
         except ValidationError as err:
+            if summary_data['status'] is True:
+                summary_data['status'] = False
             summary_data['exception']['count'] += 1
             summary_data['exception']['testcase_ids'].append(testcase.id)
             run_testcases_result.append({'testcase_id': testcase.id, "exception": str(err)})

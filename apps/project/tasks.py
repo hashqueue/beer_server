@@ -29,17 +29,21 @@ def run_project(project_id, config_id=None, creator=None):
         config = get_object_or_404(Config, pk=config_id)
     testsuites = TestSuite.objects.filter(project_id=project_id)
     if len(testsuites) == 0:
-        return {'error': '运行项目时,项目中的测试用例不能为空'}
+        return {'error': '运行项目时,项目中的测试套件不能为空'}
     testcases_all = []
     for testsuite in testsuites:
         testcases = TestCase.objects.filter(testsuite_id=testsuite.id)
+        print(repr(testcases))
+        print(testsuite.id)
         if len(testcases) == 0:
-            return {'error': '运行测试套件时,测试套件中测试用例不能为空'}
+            # TODO 此处return欠妥，e.g. 某个项目下有3个套件，两个套件下用例不为空，另外一个套件下用例为空。
+            #  此处为for循环，如果拿到用例为空会直接return，忽略了其他两个有用例的套件
+            return {'error': '运行项目时,项目中的测试套件中的测试用例不能为空'}
         testcases_all.extend(testcases)
     run_project_result = {}
     run_testsuites_result = []
     # 项目级别的汇总数据
-    summary_data = {'creator': creator,
+    summary_data = {'status': True,
                     'testsuite_info': {'testsuite_count': len(testsuites), 'testsuite_ids': []},
                     'testcase_info': {
                         'testcase_count': len(testcases_all),
@@ -70,6 +74,8 @@ def run_project(project_id, config_id=None, creator=None):
                     # 项目层面计算测试用例的成功/失败/异常的比例
                     summary_data['testcase_info']['failure']['count'] += 1
                     summary_data['testcase_info']['failure']['testcase_ids'].append(testcase.id)
+                    if summary_data['status'] is True:
+                        summary_data['status'] = False
                     # 测试套件层面计算测试用例的成功/失败/异常的比例
                     testsuite_summary_data['failure']['count'] += 1
                     testsuite_summary_data['failure']['testcase_ids'].append(testcase.id)
@@ -80,6 +86,8 @@ def run_project(project_id, config_id=None, creator=None):
                     testsuite_summary_data['success']['testcase_ids'].append(testcase.id)
                 run_testcases_result.append({'testcase_id': testcase.id, 'data': res_data})
             except ValidationError as err:
+                if summary_data['status'] is True:
+                    summary_data['status'] = False
                 summary_data['testcase_info']['exception']['count'] += 1
                 summary_data['testcase_info']['exception']['testcase_ids'].append(testcase.id)
                 testsuite_summary_data['exception']['count'] += 1
