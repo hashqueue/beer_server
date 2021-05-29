@@ -14,11 +14,11 @@ def extract_data_with_jmespath(resp_obj, jmespath_expression):
     从测试步骤响应对象中提取需要的数据
     @param resp_obj: 响应体数据 dict
         {
-        "status_code": {...},
+        "status_code": http响应状态码,
         "response_headers": {...},
         "body": {...},
         "request_headers": {...},
-        "request_url": {...},
+        "request_url": http请求的url,
         "cookies": {...}
         }
     @param jmespath_expression: jmespath表达式
@@ -32,7 +32,7 @@ def extract_data_with_jmespath(resp_obj, jmespath_expression):
             last_key_str = jmespath_expression_list[-1]
             # jmespath中区分未找到键的值为None 和 某个键的值就是None
             if not jmespath.search(f"contains(keys({keys_str}), '{last_key_str}')", resp_obj):
-                raise ValidationError({jmespath_expression: f'未找到{jmespath_expression}'}, code=400)
+                raise ValidationError({'ValueNotFoundError': f'未找到`{jmespath_expression}`对应的值'}, code=400)
         return extract_variable_value
     except JMESPathError as err:
         raise ValidationError({'JMESPathError': str(err)}, code=400)
@@ -43,11 +43,11 @@ def validate_resp_data(resp_data, validator_type, jmespath_expression, expected_
     测试步骤断言处理
     @param resp_data: 响应体数据 dict
         {
-        "status_code": {...},
+        "status_code": http响应状态码,
         "response_headers": {...},
         "body": {...},
         "request_headers": {...},
-        "request_url": {...},
+        "request_url": http请求的url,
         "cookies": {...}
         }
     @param validator_type: 断言类型
@@ -63,9 +63,9 @@ def validate_resp_data(resp_data, validator_type, jmespath_expression, expected_
             last_key_str = jmespath_expression_list[-1]
             # jmespath中区分未找到键的值为None 和 某个键的值就是None
             if not jmespath.search(f"contains(keys({keys_str}), '{last_key_str}')", resp_data):
-                return {'status': False, 'err': f'未找到{jmespath_expression}'}
+                return {'status': False, 'err': f'未找到`{jmespath_expression}`对应的值'}
     except JMESPathError as err1:
-        return {'status': False, 'err': str(err1)}
+        return {'status': False, 'err': f'JMESPathError：`{str(err1)}`'}
     # 对json字符串中的true，false，null做兼容处理
     if expected_value == 'true':
         expected_value = True
@@ -74,56 +74,189 @@ def validate_resp_data(resp_data, validator_type, jmespath_expression, expected_
     elif expected_value == 'null':
         expected_value = None
     try:
+        # equal
         if validator_type == 'equal_integer':
+            assert isinstance(actual_value,
+                              int), f'实际结果`{actual_value}`必须为整数(integer)类型,当前实际结果数据类型为`{type(actual_value)}`'
             assert actual_value == int(expected_value), f'实际结果`{actual_value}`不等于预期结果`{expected_value}`'
-        elif validator_type == 'equal_string':
-            assert actual_value == expected_value, f'实际结果`{actual_value}`不等于预期结果`{expected_value}`'
+
         elif validator_type == 'equal_float':
+            assert isinstance(actual_value,
+                              float), f'实际结果`{actual_value}`必须为小数(float)类型,当前实际结果数据类型为`{type(actual_value)}`'
             assert actual_value == float(expected_value), f'实际结果`{actual_value}`不等于预期结果`{expected_value}`'
-        elif validator_type == 'contained_by':
-            assert actual_value in expected_value, f'预期结果`{expected_value}`不包含实际结果`{actual_value}`'
-        elif validator_type == 'contains':
-            assert expected_value in actual_value, f'实际结果`{actual_value}`不包含预期结果`{expected_value}`'
-        elif validator_type == 'endswith':
-            assert str(actual_value).endswith(str(expected_value)), f'实际结果`{actual_value}`不以预期结果`{expected_value}`结尾'
-        elif validator_type == 'greater_or_equals':
-            assert actual_value >= expected_value, f'实际结果`{actual_value}`与预期结果`{expected_value}`不满足`实际结果>=预期结果`关系'
-        elif validator_type == 'greater_than':
-            assert actual_value > expected_value, f'实际结果`{actual_value}`与预期结果`{expected_value}`不满足`实际结果>预期结果`关系'
-        elif validator_type == 'length_equal':
-            assert isinstance(expected_value, int), f'预期结果`{expected_value}`必须为数字类型'
-            assert len(actual_value) == expected_value, f'实际结果的长度为`{len(actual_value)}`, 不等于预期结果`{expected_value}`'
-        elif validator_type == 'length_greater_or_equals':
-            assert isinstance(expected_value, int), f'预期结果`{expected_value}`必须为数字类型'
-            assert len(actual_value) >= expected_value, \
-                f'实际结果的长度为`{len(actual_value)}`, 预期结果为`{expected_value}`, 不满足`实际结果长度>=预期结果`关系'
-        elif validator_type == 'length_greater_than':
-            assert isinstance(expected_value, int), f'预期结果`{expected_value}`必须为数字类型'
-            assert len(actual_value) > expected_value, \
-                f'实际结果的长度为`{len(actual_value)}`, 预期结果为`{expected_value}`, 不满足`实际结果长度>预期结果`关系'
-        elif validator_type == 'length_less_or_equals':
-            assert isinstance(expected_value, int), f'预期结果`{expected_value}`必须为数字类型'
-            assert len(actual_value) <= expected_value, \
-                f'实际结果的长度为`{len(actual_value)}`, 预期结果为`{expected_value}`, 不满足`实际结果长度<=预期结果`关系'
-        elif validator_type == 'length_less_than':
-            assert isinstance(expected_value, int), f'预期结果`{expected_value}`必须为数字类型'
-            assert len(actual_value) < expected_value, \
-                f'实际结果的长度为`{len(actual_value)}`, 预期结果为`{expected_value}`, 不满足`实际结果长度<预期结果`关系'
-        elif validator_type == 'less_or_equals':
-            assert actual_value <= expected_value, f'实际结果`{actual_value}`与预期结果`{expected_value}`不满足`实际结果<=预期结果`关系'
-        elif validator_type == 'less_than':
-            assert actual_value < expected_value, f'实际结果`{actual_value}`与预期结果`{expected_value}`不满足`实际结果<预期结果`关系'
-        elif validator_type == 'not_equal':
+
+        elif validator_type == 'equal_boolean':
+            assert isinstance(actual_value,
+                              bool), f'实际结果`{actual_value}`必须为布尔(boolean)类型,当前实际结果数据类型为`{type(actual_value)}`'
+            assert actual_value == expected_value, f'实际结果`{actual_value}`不等于预期结果`{expected_value}`'
+
+        elif validator_type == 'equal_null':
+            assert isinstance(actual_value,
+                              None.__class__), f'实际结果`{actual_value}`必须为空(null)类型,当前实际结果数据类型为`{type(actual_value)}`'
+            assert actual_value == expected_value, f'实际结果`{actual_value}`不等于预期结果`{expected_value}`'
+
+        elif validator_type == 'equal_string':
+            assert isinstance(actual_value,
+                              str), f'实际结果`{actual_value}`必须为字符串(string)类型,当前实际结果数据类型为`{type(actual_value)}`'
+            assert actual_value == expected_value, f'实际结果`{actual_value}`不等于预期结果`{expected_value}`'
+
+        # not equal
+        elif validator_type == 'not_equal_integer':
+            assert isinstance(actual_value,
+                              int), f'实际结果`{actual_value}`必须为整数(integer)类型,当前实际结果数据类型为`{type(actual_value)}`'
+            assert actual_value != int(expected_value), f'实际结果`{actual_value}`与预期结果`{expected_value}`不满足`实际结果!=预期结果`关系'
+
+        elif validator_type == 'not_equal_float':
+            assert isinstance(actual_value,
+                              float), f'实际结果`{actual_value}`必须为小数(float)类型,当前实际结果数据类型为`{type(actual_value)}`'
+            assert actual_value != float(
+                expected_value), f'实际结果`{actual_value}`与预期结果`{expected_value}`不满足`实际结果!=预期结果`关系'
+
+        elif validator_type == 'not_equal_boolean':
+            assert isinstance(actual_value,
+                              bool), f'实际结果`{actual_value}`必须为布尔(boolean)类型,当前实际结果数据类型为`{type(actual_value)}`'
             assert actual_value != expected_value, f'实际结果`{actual_value}`与预期结果`{expected_value}`不满足`实际结果!=预期结果`关系'
+
+        elif validator_type == 'not_equal_null':
+            assert not isinstance(actual_value,
+                                  None.__class__), f'实际结果`{actual_value}`必须为非空(非null)类型,当前实际结果数据类型为`{type(actual_value)}`'
+            assert actual_value != expected_value, f'实际结果`{actual_value}`与预期结果`{expected_value}`不满足`实际结果!=预期结果`关系`'
+
+        elif validator_type == 'not_equal_string':
+            assert isinstance(actual_value,
+                              str), f'实际结果`{actual_value}`必须为字符串(string)类型,当前实际结果数据类型为`{type(actual_value)}`'
+            assert actual_value != expected_value, f'实际结果`{actual_value}`与预期结果`{expected_value}`不满足`实际结果!=预期结果`关系'
+
+        # contains & contained_by
+        elif validator_type == 'contained_by':
+            assert str(actual_value) in expected_value, f'预期结果`{expected_value}`不包含实际结果`{actual_value}`'
+
+        elif validator_type == 'contains':
+            assert expected_value in str(actual_value), f'实际结果`{actual_value}`不包含预期结果`{expected_value}`'
+
+        # startswith & endswith & startswith_by & endswith_by
+        elif validator_type == 'startswith':
+            assert str(actual_value).startswith(expected_value), f'实际结果`{actual_value}`不以预期结果`{expected_value}`开头'
+
+        elif validator_type == 'endswith':
+            assert str(actual_value).endswith(expected_value), f'实际结果`{actual_value}`不以预期结果`{expected_value}`结尾'
+
+        elif validator_type == 'startswith_by':
+            assert expected_value.startswith(str(actual_value)), f'预期结果`{expected_value}`不以实际结果`{actual_value}`开头'
+
+        elif validator_type == 'endswith_by':
+            assert expected_value.endswith(str(actual_value)), f'预期结果`{expected_value}`不以实际结果`{actual_value}`结尾'
+
+        # greater_or_equals(大于等于)
+        elif validator_type == 'greater_or_equals_integer':
+            assert isinstance(actual_value,
+                              int), f'实际结果`{actual_value}`必须为整数(integer)类型,当前实际结果数据类型为`{type(actual_value)}`'
+            assert actual_value >= int(expected_value), f'实际结果`{actual_value}`与预期结果`{expected_value}`不满足`实际结果>=预期结果`关系'
+
+        elif validator_type == 'greater_or_equals_float':
+            assert isinstance(actual_value,
+                              float), f'实际结果`{actual_value}`必须为小数(float)类型,当前实际结果数据类型为`{type(actual_value)}`'
+            assert actual_value >= float(
+                expected_value), f'实际结果`{actual_value}`与预期结果`{expected_value}`不满足`实际结果>=预期结果`关系'
+
+        # greater_than(大于)
+        elif validator_type == 'greater_than_integer':
+            assert isinstance(actual_value,
+                              int), f'实际结果`{actual_value}`必须为整数(integer)类型,当前实际结果数据类型为`{type(actual_value)}`'
+            assert actual_value > int(expected_value), f'实际结果`{actual_value}`与预期结果`{expected_value}`不满足`实际结果>预期结果`关系'
+
+        elif validator_type == 'greater_than_float':
+            assert isinstance(actual_value,
+                              float), f'实际结果`{actual_value}`必须为小数(float)类型,当前实际结果数据类型为`{type(actual_value)}`'
+            assert actual_value > float(expected_value), f'实际结果`{actual_value}`与预期结果`{expected_value}`不满足`实际结果>预期结果`关系'
+
+        # less_or_equals(小于等于)
+        elif validator_type == 'less_or_equals_integer':
+            assert isinstance(actual_value,
+                              int), f'实际结果`{actual_value}`必须为整数(integer)类型,当前实际结果数据类型为`{type(actual_value)}`'
+            assert actual_value <= int(expected_value), f'实际结果`{actual_value}`与预期结果`{expected_value}`不满足`实际结果<=预期结果`关系'
+
+        elif validator_type == 'less_or_equals_float':
+            assert isinstance(actual_value,
+                              float), f'实际结果`{actual_value}`必须为小数(float)类型,当前实际结果数据类型为`{type(actual_value)}`'
+            assert actual_value <= float(
+                expected_value), f'实际结果`{actual_value}`与预期结果`{expected_value}`不满足`实际结果<=预期结果`关系'
+
+        # less_than(小于)
+        elif validator_type == 'less_than_integer':
+            assert isinstance(actual_value,
+                              int), f'实际结果`{actual_value}`必须为整数(integer)类型,当前实际结果数据类型为`{type(actual_value)}`'
+            assert actual_value < int(expected_value), f'实际结果`{actual_value}`与预期结果`{expected_value}`不满足`实际结果<预期结果`关系'
+
+        elif validator_type == 'less_than_float':
+            assert isinstance(actual_value,
+                              float), f'实际结果`{actual_value}`必须为小数(float)类型,当前实际结果数据类型为`{type(actual_value)}`'
+            assert actual_value < float(expected_value), f'实际结果`{actual_value}`与预期结果`{expected_value}`不满足`实际结果<预期结果`关系'
+
+        # 对象的length与预期结果进行比较(都是整数类型)
+        elif validator_type == 'length_equal':
+            assert not isinstance(actual_value, int), f'实际结果`{actual_value}`的数据类型不能为整数(integer)类型'
+            assert not isinstance(actual_value, float), f'实际结果`{actual_value}`的数据类型不能为小数(float)类型'
+            assert not isinstance(actual_value, None.__class__), f'实际结果`{actual_value}`的数据类型不能为空(null)类型'
+            assert not isinstance(actual_value, bool), f'实际结果`{actual_value}`的数据类型不能为布尔(boolean)类型'
+            assert not isinstance(actual_value, complex), f'实际结果`{actual_value}`的数据类型不能为复数(complex)类型'
+            assert len(actual_value) == int(expected_value), f'实际结果的长度为`{len(actual_value)}`, 不等于预期结果`{expected_value}`'
+
+        elif validator_type == 'length_not_equal':
+            assert not isinstance(actual_value, int), f'实际结果`{actual_value}`的数据类型不能为整数(integer)类型'
+            assert not isinstance(actual_value, float), f'实际结果`{actual_value}`的数据类型不能为小数(float)类型'
+            assert not isinstance(actual_value, None.__class__), f'实际结果`{actual_value}`的数据类型不能为空(null)类型'
+            assert not isinstance(actual_value, bool), f'实际结果`{actual_value}`的数据类型不能为布尔(boolean)类型'
+            assert not isinstance(actual_value, complex), f'实际结果`{actual_value}`的数据类型不能为复数(complex)类型'
+            assert len(actual_value) != int(
+                expected_value), f'实际结果的长度为`{len(actual_value)}`, 预期结果为`{expected_value}`, 不满足`实际结果长度!=预期结果`关系'
+
+        elif validator_type == 'length_greater_or_equals':
+            assert not isinstance(actual_value, int), f'实际结果`{actual_value}`的数据类型不能为整数(integer)类型'
+            assert not isinstance(actual_value, float), f'实际结果`{actual_value}`的数据类型不能为小数(float)类型'
+            assert not isinstance(actual_value, None.__class__), f'实际结果`{actual_value}`的数据类型不能为空(null)类型'
+            assert not isinstance(actual_value, bool), f'实际结果`{actual_value}`的数据类型不能为布尔(boolean)类型'
+            assert not isinstance(actual_value, complex), f'实际结果`{actual_value}`的数据类型不能为复数(complex)类型'
+            assert len(actual_value) >= int(expected_value), \
+                f'实际结果的长度为`{len(actual_value)}`, 预期结果为`{expected_value}`, 不满足`实际结果长度>=预期结果`关系'
+
+        elif validator_type == 'length_greater_than':
+            assert not isinstance(actual_value, int), f'实际结果`{actual_value}`的数据类型不能为整数(integer)类型'
+            assert not isinstance(actual_value, float), f'实际结果`{actual_value}`的数据类型不能为小数(float)类型'
+            assert not isinstance(actual_value, None.__class__), f'实际结果`{actual_value}`的数据类型不能为空(null)类型'
+            assert not isinstance(actual_value, bool), f'实际结果`{actual_value}`的数据类型不能为布尔(boolean)类型'
+            assert not isinstance(actual_value, complex), f'实际结果`{actual_value}`的数据类型不能为复数(complex)类型'
+            assert len(actual_value) > int(expected_value), \
+                f'实际结果的长度为`{len(actual_value)}`, 预期结果为`{expected_value}`, 不满足`实际结果长度>预期结果`关系'
+
+        elif validator_type == 'length_less_or_equals':
+            assert not isinstance(actual_value, int), f'实际结果`{actual_value}`的数据类型不能为整数(integer)类型'
+            assert not isinstance(actual_value, float), f'实际结果`{actual_value}`的数据类型不能为小数(float)类型'
+            assert not isinstance(actual_value, None.__class__), f'实际结果`{actual_value}`的数据类型不能为空(null)类型'
+            assert not isinstance(actual_value, bool), f'实际结果`{actual_value}`的数据类型不能为布尔(boolean)类型'
+            assert not isinstance(actual_value, complex), f'实际结果`{actual_value}`的数据类型不能为复数(complex)类型'
+            assert len(actual_value) <= int(expected_value), \
+                f'实际结果的长度为`{len(actual_value)}`, 预期结果为`{expected_value}`, 不满足`实际结果长度<=预期结果`关系'
+
+        elif validator_type == 'length_less_than':
+            assert not isinstance(actual_value, int), f'实际结果`{actual_value}`的数据类型不能为整数(integer)类型'
+            assert not isinstance(actual_value, float), f'实际结果`{actual_value}`的数据类型不能为小数(float)类型'
+            assert not isinstance(actual_value, None.__class__), f'实际结果`{actual_value}`的数据类型不能为空(null)类型'
+            assert not isinstance(actual_value, bool), f'实际结果`{actual_value}`的数据类型不能为布尔(boolean)类型'
+            assert not isinstance(actual_value, complex), f'实际结果`{actual_value}`的数据类型不能为复数(complex)类型'
+            assert len(actual_value) < int(expected_value), \
+                f'实际结果的长度为`{len(actual_value)}`, 预期结果为`{expected_value}`, 不满足`实际结果长度<预期结果`关系'
+
+        # TODO regex(正则)
         elif validator_type == 'regex_match':
             pass
-        elif validator_type == 'startswith':
-            assert str(actual_value).startswith(str(expected_value)), f'实际结果`{actual_value}`不以预期结果`{expected_value}`开头'
         return {'status': True, 'err': None}
     except AssertionError as err2:
-        return {'status': False, 'err': str(err2)}
+        return {'status': False, 'err': f'AssertionError：`{str(err2)}`'}
     except TypeError as err3:
-        return {'status': False, 'err': str(err3)}
+        return {'status': False, 'err': f'TypeError(数据类型转换时发生异常)：`{str(err3)}`'}
+    except Exception as err4:
+        return {'status': False, 'err': f'Error：`{str(err4)}`'}
 
 
 if __name__ == '__main__':

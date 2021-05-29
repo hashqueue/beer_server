@@ -55,24 +55,46 @@ class TestStep(models.Model):
 
 class TestStepValidator(models.Model):
     VALIDATOR_TYPE_CHOICES = [
-        ('equal_integer', '实际结果等于预期结果(整数类型进行比较)'),
-        ('equal_string', '实际结果等于预期结果(字符串类型进行比较)'),
-        ('equal_float', '实际结果等于预期结果(浮点数类型进行比较)'),
-        ('contained_by', '实际结果包含在预期结果中'),
-        ('contains', '预期结果包含在实际结果中'),
-        ('endswith', '实际结果以预期结果结尾'),
-        ('greater_or_equals', '实际结果大于或等于预期结果'),
-        ('greater_than', '实际结果大于预期结果'),
-        ('length_equal', '实际结果长度等于预期结果'),
-        ('length_greater_or_equals', '实际结果长度大于或等于预期结果'),
-        ('length_greater_than', '实际结果长度大于预期结果'),
-        ('length_less_or_equals', '实际结果长度小于或等于预期结果'),
-        ('length_less_than', '实际结果长度小于预期结果'),
-        ('less_or_equals', '实际结果小于或等于预期结果'),
-        ('less_than', '实际结果小于预期结果'),
-        ('not_equal', '实际结果不等于预期结果'),
-        ('regex_match', '实际结果是否符合预期结果的正则表达式匹配规则'),
-        ('startswith', '实际结果以预期结果开头')
+        ('equal_integer', '实际结果(整数类型)等于预期结果(整数类型)'),
+        ('equal_float', '实际结果(小数类型)等于预期结果(小数类型)'),
+        ('equal_boolean', '实际结果(布尔类型)等于预期结果(布尔类型)'),
+        ('equal_null', '实际结果(null类型)等于预期结果(null类型)'),
+        ('equal_string', '实际结果(字符串类型)等于预期结果(字符串类型)'),
+
+        ('not_equal_integer', '实际结果(整数类型)不等于预期结果(整数类型)'),
+        ('not_equal_float', '实际结果(小数类型)不等于预期结果(小数类型)'),
+        ('not_equal_boolean', '实际结果(布尔类型)不等于预期结果(布尔类型)'),
+        ('not_equal_null', '实际结果(null类型)不等于预期结果(null类型)'),
+        ('not_equal_string', '实际结果(字符串类型)不等于预期结果(字符串类型)'),
+
+        ('contained_by', '预期结果(字符串类型)中包含实际结果(字符串类型)'),
+        ('contains', '实际结果(字符串类型)中包含预期结果(字符串类型)'),
+
+        ('startswith', '实际结果(字符串类型)以预期结果(字符串类型)开头'),
+        ('endswith', '实际结果(字符串类型)以预期结果(字符串类型)结尾'),
+        ('startswith_by', '预期结果(字符串类型)以实际结果(字符串类型)开头'),
+        ('endswith_by', '预期结果(字符串类型)以实际结果(字符串类型)结尾'),
+
+        ('greater_or_equals_integer', '实际结果(整数类型)大于或等于预期结果(整数类型)'),
+        ('greater_or_equals_float', '实际结果(小数类型)大于或等于预期结果(小数类型)'),
+
+        ('greater_than_integer', '实际结果(整数类型)大于预期结果(整数类型)'),
+        ('greater_than_float', '实际结果(小数类型)大于预期结果(小数类型)'),
+
+        ('less_or_equals_integer', '实际结果(整数类型)小于或等于预期结果(整数类型)'),
+        ('less_or_equals_float', '实际结果(小数类型)小于或等于预期结果(小数类型)'),
+
+        ('less_than_integer', '实际结果(整数类型)小于预期结果(整数类型)'),
+        ('less_than_float', '实际结果(小数类型)小于预期结果(小数类型)'),
+
+        ('length_equal', '实际结果长度(整数类型)等于预期结果(整数类型)'),
+        ('length_not_equal', '实际结果长度(整数类型)不等于预期结果(整数类型)'),
+        ('length_greater_or_equals', '实际结果长度(整数类型)大于或等于预期结果(整数类型)'),
+        ('length_greater_than', '实际结果长度(整数类型)大于预期结果(整数类型)'),
+        ('length_less_or_equals', '实际结果长度(整数类型)小于或等于预期结果(整数类型)'),
+        ('length_less_than', '实际结果长度(整数类型)小于预期结果(整数类型)'),
+
+        ('regex_match', '实际结果是否符合预期结果的正则表达式匹配规则')
     ]
     validator_type = models.CharField(max_length=56, choices=VALIDATOR_TYPE_CHOICES, verbose_name='提取器类型',
                                       help_text='提取器类型')

@@ -49,7 +49,7 @@ def send_request(teststep, timeout=120):
                     "response_encoding": response.encoding, "response_time_ms": response_time_ms
                     }
     except RequestException as err:
-        return {"err": str(err)}
+        return {"RequestException": str(err)}
 
 
 def handle_global_or_testcase_variables(teststep, variables):
