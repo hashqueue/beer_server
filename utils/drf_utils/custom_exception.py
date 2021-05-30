@@ -59,7 +59,7 @@ def custom_exception_handler(exc, context):
             response.data['message'] = '请求中有不支持的媒体类型'
             response.data['code'] = 40015
         elif response.status_code == 429:
-            response.data['message'] = '请求被限制'
+            response.data['message'] = '请求被限流'
             response.data['code'] = 40029
         elif response.status_code == 500:
             response.data['message'] = '服务器内部错误'
