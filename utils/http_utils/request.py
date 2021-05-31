@@ -123,22 +123,18 @@ def handle_request_data_before_send_request(teststep, config, testcase_variables
         # 全局变量
         global_variables = config.global_variable
         if func_queryset_length == 1:  # 该测试步骤所在的项目下配置了全局函数
-            try:
-                handle_global_or_testcase_variables(teststep=teststep, variables=global_variables)
-                # 对函数进行调用，并替换为函数的返回值
-                handle_global_functions(teststep=teststep, project_id=project_id)
-            except ValidationError:
-                if testcase_variables != {}:
-                    # 测试用例变量的优先级>全局变量：测试用例变量会覆盖全局变量
-                    handle_global_or_testcase_variables(teststep=teststep, variables=testcase_variables)
-                    handle_global_functions(teststep=teststep, project_id=project_id)
+            if testcase_variables != {}:
+                # 测试用例变量的优先级>全局变量：测试用例变量会覆盖全局变量(具体体现为：测试用例变量不为空时，优先于全局变量进行替换)
+                handle_global_or_testcase_variables(teststep=teststep, variables=testcase_variables)
+            handle_global_or_testcase_variables(teststep=teststep, variables=global_variables)
+            # 对函数进行调用，并替换为函数的返回值
+            handle_global_functions(teststep=teststep, project_id=project_id)
+
         else:
-            try:
-                handle_global_or_testcase_variables(teststep=teststep, variables=global_variables)
-            except ValidationError:
-                if testcase_variables != {}:
-                    # 测试用例变量的优先级>全局变量：测试用例变量会覆盖全局变量
-                    handle_global_or_testcase_variables(teststep=teststep, variables=testcase_variables)
+            if testcase_variables != {}:
+                # 测试用例变量的优先级>全局变量：测试用例变量会覆盖全局变量(具体体现为：测试用例变量不为空时，优先于全局变量进行替换)
+                handle_global_or_testcase_variables(teststep=teststep, variables=testcase_variables)
+            handle_global_or_testcase_variables(teststep=teststep, variables=global_variables)
     else:
         # 未使用配置时，需要判断是否有引用了测试用例级别的变量
         if testcase_variables != {}:

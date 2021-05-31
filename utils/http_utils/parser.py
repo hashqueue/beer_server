@@ -4,6 +4,7 @@
 # @File    : parser.py
 # @Software: PyCharm
 # @Description: 测试数据解析模块
+import json
 import re
 import importlib
 from types import FunctionType
@@ -32,7 +33,7 @@ def parse_request_url(url_path: str = None) -> str:
         raise ValidationError({url_path: "测试步骤中的url_path未以`http(s)://`开头"}, code=400)
 
 
-def regx_variables(raw_text: Any, variables: dict, is_json=False) -> str:
+def regx_variables(raw_text: str, variables: dict, is_json: bool = False) -> Any:
     """
     对请求数据中引用了全局变量或测试用例变量的数据进行解析，然后替换为全局变量或测试用例变量中变量的具体的值
     @param is_json:
@@ -41,16 +42,29 @@ def regx_variables(raw_text: Any, variables: dict, is_json=False) -> str:
     @return: 已完成替换的请求数据
     """
     need_replace_vars_list = re.findall(r'\$(\w+)', raw_text)
+    print(need_replace_vars_list)
     for raw_variable in need_replace_vars_list:
         for key in variables.keys():
             if key in raw_variable:
                 raw_variable = key
         try:
-            # 如果json格式请求参数中引用了全局函数，需要判断具体参数的类型("12" ===> 12)，form-data和params会自动将"12"转换为12
+            # 如果json格式请求参数中引用了全局函数，需要判断具体参数的类型("12" ===> 12)，form-data和params在server端接收时会自动将"12"转换为12
             if is_json:
-                if isinstance(variables[raw_variable], int) or isinstance(variables[raw_variable], float):
+                if isinstance(variables[raw_variable], bool):
+                    # 如果全局变量/测试用例变量的某个key的值为布尔类型
+                    if variables[raw_variable]:
+                        raw_text = raw_text.replace('"$' + raw_variable + '"', 'true')
+                    else:
+                        raw_text = raw_text.replace('"$' + raw_variable + '"', 'false')
+                elif isinstance(variables[raw_variable], None.__class__):
+                    # 如果全局变量/测试用例变量的某个key的值为None类型
+                    raw_text = raw_text.replace('"$' + raw_variable + '"', 'null')
+                elif isinstance(variables[raw_variable], int) or isinstance(variables[raw_variable], float):
+                    # 如果全局变量/测试用例变量的某个key的值为int或float类型
+                    print(type(variables[raw_variable]))
                     raw_text = raw_text.replace('"$' + raw_variable + '"', str(variables[raw_variable]))
                 else:
+                    # 如果全局变量/测试用例变量的某个key的值为字符串类型
                     raw_text = re.sub(r'\$' + raw_variable, str(variables[raw_variable]), raw_text)
             else:
                 raw_text = re.sub(r'\$' + raw_variable, str(variables[raw_variable]), raw_text)
@@ -79,7 +93,7 @@ def get_func_mapping(project_id):
     return functions_data
 
 
-def regx_functions(content: str, project_id=None, is_json=False):
+def regx_functions(content: str, project_id: int = None, is_json: bool = False) -> Any:
     """
     从字符串内容中提取所有函数，其格式为${func_name(param1, param2, key1=value1)}
     执行函数并获得返回值，并在content中进行替换为函数的执行后的返回值
@@ -96,9 +110,16 @@ def regx_functions(content: str, project_id=None, is_json=False):
             project_id) + ' import *\ncode_execute_result = ' + raw_func
         try:
             exec(code, data)
-            # 如果json格式请求参数中引用了全局函数，需要判断具体参数的类型("12" ===> 12)，form-data和params会自动将"12"转换为12
+            # 如果json格式请求参数中引用了全局函数，需要判断具体参数的类型("12" ===> 12)，form-data和params在server端接收时会自动将"12"转换为12
             if is_json:
-                if isinstance(data['code_execute_result'], int) or isinstance(data['code_execute_result'], float):
+                if isinstance(data['code_execute_result'], bool):
+                    if data['code_execute_result']:
+                        content = content.replace('"${' + raw_func + '}"', 'true')
+                    else:
+                        content = content.replace('"${' + raw_func + '}"', 'false')
+                elif isinstance(data['code_execute_result'], None.__class__):
+                    content = content.replace('"${' + raw_func + '}"', 'null')
+                elif isinstance(data['code_execute_result'], int) or isinstance(data['code_execute_result'], float):
                     content = content.replace('"${' + raw_func + '}"', str(data['code_execute_result']))
                 else:
                     content = content.replace('${' + raw_func + '}', str(data['code_execute_result']))
@@ -112,10 +133,14 @@ def regx_functions(content: str, project_id=None, is_json=False):
 if __name__ == '__main__':
     # print(parse_request_url(url_path='https://www.baidu.com/api/v1/auth/'))
     # url = "http://$1base_url.cn/sys/$url_path/model/"
-    # url = "http://base_url.cn/sys/url_path/model/"
-    global_vars = {'base_url': 'www.baidu.com', 'url_path': 'api/v1/auth/projects/', 'username': 'admin1',
-                   'password': '111111', 'age': {"q": 1}}
-    # url = regx_variables(raw_text=url, variables=global_vars)
+    # url = json.dumps({"url": "http://$base_url.cn/sys/$url_path/model/", "age": "${add_str(3.13, 5.37)}哈哈哈"})
+    # global_vars = {'base_url': 'www.baidu.com', 'url_path': 'api/v1/auth/projects/', 'username': 'admin1',
+    #                'password': '111111', 'q': 12}
+    # url = regx_variables(raw_text=url, variables=global_vars, is_json=True)
     # print(url)
+    # print(json.loads(url))
+    # print(type(json.loads(url)))
     # print(get_func_mapping(1))
-    print(regx_functions("""${add(3,5)}""", project_id=3))
+    # print(json.loads(regx_functions(url, project_id=1, is_json=True)))
+    # print(type(json.loads(regx_functions(url, project_id=1, is_json=True))))
+    pass
