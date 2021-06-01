@@ -260,93 +260,94 @@ def validate_resp_data(resp_data, validator_type, jmespath_expression, expected_
 
 
 if __name__ == '__main__':
-    resp_obj_data1 = {
-        "status_code": 200,
-        "response_headers": {
-            "Server": "gunicorn/19.9.0",
-            "Date": "Sun, 25 Apr 2021 12:44:56 GMT",
-            "Connection": "keep-alive",
-            "Content-Type": "application/json",
-            "Content-Length": "478",
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Credentials": "true"
-        },
-        "body": {
-            "code": 20000,
-            "message": "success",
-            "data": {
-                "id": 1,
-                "create_time": "2021-04-19 22:55:24",
-                "update_time": "2021-04-19 22:55:24",
-                "teststeps": [
-                    {
-                        "id": 1,
-                        "step_validators": [],
-                        "teststep_name": "用户登录",
-                        "method": "POST",
-                        "url_path": "http://anonymous.org.cn:8008/post",
-                        "desc": "",
-                        "json": None,
-                        "params": None,
-                        "data": {
-                            "password": "admin",
-                            "username": "admin"
-                        },
-                        "headers": {
-                            "Content-Type": "application/json"
-                        },
-                        "cookies": None,
-                        "export": None,
-                        "extract": True,
-                        "quote_testcase_id": False
-                    }
-                ],
-                "creator": "admin1",
-                "modifier": "admin1",
-                "testcase_name": "用户登录不使用全局变量",
-                "testcase_desc": "用户登录不使用全局变量",
-                "testsuite": 1
-            }
-        },
-        "request_headers": {
-            "User-Agent": "python-requests/2.25.1",
-            "Accept-Encoding": "gzip, deflate",
-            "Accept": "*/*",
-            "Connection": "keep-alive",
-            "Content-Type": "application/json",
-            "Content-Length": "52"
-        },
-        "request_url": "http://anonymous.org.cn:8008/post",
-        "cookies": {}
-    }
-    print(validate_resp_data(resp_obj_data1, 'equal', 'status_code', 200))
-    print(validate_resp_data(resp_obj_data1, 'equal', 'body.data.teststeps[0].json', 'null'))
-    print(validate_resp_data(resp_obj_data1, 'equal', 'body.data.teststeps[0].extract', 'true'))
-    print(validate_resp_data(resp_obj_data1, 'equal', 'body.data.teststeps[0].quote_testcase_id', 'false'))
-    print(validate_resp_data(resp_obj_data1, 'contained_by', 'body.data.teststeps[0].method', 'GET、POST、DELETE'))
-    print(validate_resp_data(resp_obj_data1, 'contains', 'body.data.teststeps[0].url_path', 'http://anonymous.org.cn'))
-    print(validate_resp_data(resp_obj_data1, 'endswith', 'body.data.teststeps[0].url_path', 'post'))
-    print(validate_resp_data(resp_obj_data1, 'greater_or_equals', 'body.code', 120000))
-    print(validate_resp_data(resp_obj_data1, 'greater_or_equals', 'body.code', 200))
-    print(validate_resp_data(resp_obj_data1, 'greater_than', 'body.code', 200))
-    print(validate_resp_data(resp_obj_data1, 'length_equal', 'body.data.teststeps[0].teststep_name', 4))
-    print(validate_resp_data(resp_obj_data1, 'length_greater_or_equals', 'body.data.teststeps[0].teststep_name', 4))
-    print(validate_resp_data(resp_obj_data1, 'length_greater_or_equals', 'body.data.teststeps[0].teststep_name', 5))
-    print(validate_resp_data(resp_obj_data1, 'length_greater_or_equals', 'body.data.teststeps[0].teststep_name', 2))
-    print(validate_resp_data(resp_obj_data1, 'length_greater_than', 'body.data.teststeps[0].teststep_name', 2))
-    print(validate_resp_data(resp_obj_data1, 'length_less_or_equals', 'body.data.teststeps[0].teststep_name', 4))
-    print(validate_resp_data(resp_obj_data1, 'length_less_or_equals', 'body.data.teststeps[0].teststep_name', 5))
-    print(validate_resp_data(resp_obj_data1, 'length_less_or_equals', 'body.data.teststeps[0].teststep_name', 2))
-    print(validate_resp_data(resp_obj_data1, 'length_less_or_equals', 'body.data.teststeps[0].teststep_name', '1'))
-    print(validate_resp_data(resp_obj_data1, 'length_less_than', 'body.data.teststeps[0].teststep_name', 4))
-    print(validate_resp_data(resp_obj_data1, 'length_less_than', 'body.data.teststeps[0].teststep_name', 5))
-    print(validate_resp_data(resp_obj_data1, 'less_or_equals', 'body.data.teststeps[0].teststep_name', '用户登录'))
-    print(validate_resp_data(resp_obj_data1, 'less_or_equals', 'body.data.teststeps[0].id', 1))
-    print(validate_resp_data(resp_obj_data1, 'less_or_equals', 'body.data.teststeps[0].id', 2))
-    print(validate_resp_data(resp_obj_data1, 'less_than', 'body.data.teststeps[0].id', 2))
-    print(validate_resp_data(resp_obj_data1, 'less_than', 'body.data.teststeps[0].id', 1))
-    print(validate_resp_data(resp_obj_data1, 'not_equal', 'body.data.teststeps[0].id', 1))
-    print(validate_resp_data(resp_obj_data1, 'not_equal', 'body.data.teststeps[0].id', 2))
-    print(validate_resp_data(resp_obj_data1, 'not_equal', 'body.data.teststeps[0].id', 'true'))
-    print(validate_resp_data(resp_obj_data1, 'startswith', 'body.data.teststeps[0].url_path', 'post'))
-    print(validate_resp_data(resp_obj_data1, 'startswith', 'body.data.teststeps[0].url_path', 'http'))
+    # resp_obj_data1 = {
+    #     "status_code": 200,
+    #     "response_headers": {
+    #         "Server": "gunicorn/19.9.0",
+    #         "Date": "Sun, 25 Apr 2021 12:44:56 GMT",
+    #         "Connection": "keep-alive",
+    #         "Content-Type": "application/json",
+    #         "Content-Length": "478",
+    #         "Access-Control-Allow-Origin": "*",
+    #         "Access-Control-Allow-Credentials": "true"
+    #     },
+    #     "body": {
+    #         "code": 20000,
+    #         "message": "success",
+    #         "data": {
+    #             "id": 1,
+    #             "create_time": "2021-04-19 22:55:24",
+    #             "update_time": "2021-04-19 22:55:24",
+    #             "teststeps": [
+    #                 {
+    #                     "id": 1,
+    #                     "step_validators": [],
+    #                     "teststep_name": "用户登录",
+    #                     "method": "POST",
+    #                     "url_path": "http://anonymous.org.cn:8008/post",
+    #                     "desc": "",
+    #                     "json": None,
+    #                     "params": None,
+    #                     "data": {
+    #                         "password": "admin",
+    #                         "username": "admin"
+    #                     },
+    #                     "headers": {
+    #                         "Content-Type": "application/json"
+    #                     },
+    #                     "cookies": None,
+    #                     "export": None,
+    #                     "extract": True,
+    #                     "quote_testcase_id": False
+    #                 }
+    #             ],
+    #             "creator": "admin1",
+    #             "modifier": "admin1",
+    #             "testcase_name": "用户登录不使用全局变量",
+    #             "testcase_desc": "用户登录不使用全局变量",
+    #             "testsuite": 1
+    #         }
+    #     },
+    #     "request_headers": {
+    #         "User-Agent": "python-requests/2.25.1",
+    #         "Accept-Encoding": "gzip, deflate",
+    #         "Accept": "*/*",
+    #         "Connection": "keep-alive",
+    #         "Content-Type": "application/json",
+    #         "Content-Length": "52"
+    #     },
+    #     "request_url": "http://anonymous.org.cn:8008/post",
+    #     "cookies": {}
+    # }
+    # print(validate_resp_data(resp_obj_data1, 'equal', 'status_code', 200))
+    # print(validate_resp_data(resp_obj_data1, 'equal', 'body.data.teststeps[0].json', 'null'))
+    # print(validate_resp_data(resp_obj_data1, 'equal', 'body.data.teststeps[0].extract', 'true'))
+    # print(validate_resp_data(resp_obj_data1, 'equal', 'body.data.teststeps[0].quote_testcase_id', 'false'))
+    # print(validate_resp_data(resp_obj_data1, 'contained_by', 'body.data.teststeps[0].method', 'GET、POST、DELETE'))
+    # print(validate_resp_data(resp_obj_data1, 'contains', 'body.data.teststeps[0].url_path', 'http://anonymous.org.cn'))
+    # print(validate_resp_data(resp_obj_data1, 'endswith', 'body.data.teststeps[0].url_path', 'post'))
+    # print(validate_resp_data(resp_obj_data1, 'greater_or_equals', 'body.code', 120000))
+    # print(validate_resp_data(resp_obj_data1, 'greater_or_equals', 'body.code', 200))
+    # print(validate_resp_data(resp_obj_data1, 'greater_than', 'body.code', 200))
+    # print(validate_resp_data(resp_obj_data1, 'length_equal', 'body.data.teststeps[0].teststep_name', 4))
+    # print(validate_resp_data(resp_obj_data1, 'length_greater_or_equals', 'body.data.teststeps[0].teststep_name', 4))
+    # print(validate_resp_data(resp_obj_data1, 'length_greater_or_equals', 'body.data.teststeps[0].teststep_name', 5))
+    # print(validate_resp_data(resp_obj_data1, 'length_greater_or_equals', 'body.data.teststeps[0].teststep_name', 2))
+    # print(validate_resp_data(resp_obj_data1, 'length_greater_than', 'body.data.teststeps[0].teststep_name', 2))
+    # print(validate_resp_data(resp_obj_data1, 'length_less_or_equals', 'body.data.teststeps[0].teststep_name', 4))
+    # print(validate_resp_data(resp_obj_data1, 'length_less_or_equals', 'body.data.teststeps[0].teststep_name', 5))
+    # print(validate_resp_data(resp_obj_data1, 'length_less_or_equals', 'body.data.teststeps[0].teststep_name', 2))
+    # print(validate_resp_data(resp_obj_data1, 'length_less_or_equals', 'body.data.teststeps[0].teststep_name', '1'))
+    # print(validate_resp_data(resp_obj_data1, 'length_less_than', 'body.data.teststeps[0].teststep_name', 4))
+    # print(validate_resp_data(resp_obj_data1, 'length_less_than', 'body.data.teststeps[0].teststep_name', 5))
+    # print(validate_resp_data(resp_obj_data1, 'less_or_equals', 'body.data.teststeps[0].teststep_name', '用户登录'))
+    # print(validate_resp_data(resp_obj_data1, 'less_or_equals', 'body.data.teststeps[0].id', 1))
+    # print(validate_resp_data(resp_obj_data1, 'less_or_equals', 'body.data.teststeps[0].id', 2))
+    # print(validate_resp_data(resp_obj_data1, 'less_than', 'body.data.teststeps[0].id', 2))
+    # print(validate_resp_data(resp_obj_data1, 'less_than', 'body.data.teststeps[0].id', 1))
+    # print(validate_resp_data(resp_obj_data1, 'not_equal', 'body.data.teststeps[0].id', 1))
+    # print(validate_resp_data(resp_obj_data1, 'not_equal', 'body.data.teststeps[0].id', 2))
+    # print(validate_resp_data(resp_obj_data1, 'not_equal', 'body.data.teststeps[0].id', 'true'))
+    # print(validate_resp_data(resp_obj_data1, 'startswith', 'body.data.teststeps[0].url_path', 'post'))
+    # print(validate_resp_data(resp_obj_data1, 'startswith', 'body.data.teststeps[0].url_path', 'http'))
+    pass

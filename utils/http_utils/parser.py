@@ -4,7 +4,6 @@
 # @File    : parser.py
 # @Software: PyCharm
 # @Description: 测试数据解析模块
-import json
 import re
 import importlib
 from types import FunctionType
