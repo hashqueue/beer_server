@@ -65,6 +65,8 @@ def handle_global_or_testcase_variables(teststep, variables):
     # 判断url_path是否符合要求
     teststep.url_path = parse_request_url(url_path=teststep.url_path)
     if teststep.json:
+        if isinstance(teststep.json, str):
+            teststep.json = json.loads(teststep.json)
         json_data = json.dumps(teststep.json)
         teststep.json = json.loads(regx_variables(json_data, variables=variables, is_json=True))
     if teststep.params:
@@ -90,6 +92,8 @@ def handle_global_functions(teststep, project_id):
     """
     teststep.url_path = regx_functions(teststep.url_path, project_id=project_id)
     if teststep.json:
+        if isinstance(teststep.json, str):
+            teststep.json = json.loads(teststep.json)
         json_data = json.dumps(teststep.json)
         teststep.json = json.loads(regx_functions(json_data, project_id=project_id, is_json=True))
     if teststep.params:
