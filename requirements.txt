@@ -15,10 +15,10 @@ Django==3.1.7
 django-celery-results==2.0.1
 django-cors-headers==3.7.0
 django-filter==2.4.0
-django-grappelli==2.14.3
+django-grappelli==2.14.4
 djangorestframework==3.12.2
-djangorestframework-simplejwt==4.6.0
-drf-spectacular==0.16.0
+djangorestframework-simplejwt==4.7.1
+drf-spectacular==0.17.0
 idna==2.10
 inflection==0.5.1
 itypes==1.2.0
