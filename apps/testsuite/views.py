@@ -55,11 +55,11 @@ class TestSuitesViewSet(CustomModelViewSet):
                                                creator=request.user.username)
             return JsonResponse(data={"task_id": async_result.task_id}, code=20000,
                                 msg=f'启动运行测试套件任务成功,任务id为{async_result.task_id},请稍后查看任务运行结果',
-                                status=status.HTTP_200_OK)
+                                status=status.HTTP_202_ACCEPTED)
         else:
             # 不选择配置直接执行测试套件
             async_result = run_testsuite.delay(testsuite_id=get_object_or_404(TestSuite, pk=pk).id,
                                                creator=request.user.username)
             return JsonResponse(data={"task_id": async_result.task_id}, code=20000,
                                 msg=f'启动运行测试套件任务成功,任务id为{async_result.task_id},请稍后查看任务运行结果',
-                                status=status.HTTP_200_OK)
+                                status=status.HTTP_202_ACCEPTED)

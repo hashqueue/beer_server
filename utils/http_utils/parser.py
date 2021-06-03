@@ -41,7 +41,7 @@ def regx_variables(raw_text: str, variables: dict, is_json: bool = False) -> Any
     @return: 已完成替换的请求数据
     """
     need_replace_vars_list = re.findall(r'\$(\w+)', raw_text)
-    print(need_replace_vars_list)
+    # print(need_replace_vars_list)
     for raw_variable in need_replace_vars_list:
         for key in variables.keys():
             if key in raw_variable:
@@ -60,7 +60,7 @@ def regx_variables(raw_text: str, variables: dict, is_json: bool = False) -> Any
                     raw_text = raw_text.replace('"$' + raw_variable + '"', 'null')
                 elif isinstance(variables[raw_variable], int) or isinstance(variables[raw_variable], float):
                     # 如果全局变量/测试用例变量的某个key的值为int或float类型
-                    print(type(variables[raw_variable]))
+                    # print(type(variables[raw_variable]))
                     raw_text = raw_text.replace('"$' + raw_variable + '"', str(variables[raw_variable]))
                 else:
                     # 如果全局变量/测试用例变量的某个key的值为字符串类型
