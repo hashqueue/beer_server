@@ -225,5 +225,6 @@ def run_testcase(testcase, config=None):
     for teststep in teststeps:
         teststep_resp_data = run_teststep(teststep, config, testcase_variables)
         teststep_resp_data['teststep_id'] = teststep.id
+        teststep_resp_data['teststep_name'] = teststep.teststep_name
         testcase_resp_datas.append(teststep_resp_data)
     return testcase_resp_datas

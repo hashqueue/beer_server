@@ -50,13 +50,15 @@ def run_testsuite(testsuite_id, config_id=None, creator=None):
             else:
                 summary_data['success']['count'] += 1
                 summary_data['success']['testcase_ids'].append(testcase.id)
-            run_testcases_result.append({'testcase_id': testcase.id, "data": res_data})
+            run_testcases_result.append(
+                {'testcase_id': testcase.id, 'testcase_name': testcase.testcase_name, "data": res_data})
         except ValidationError as err:
             if summary_data['status'] is True:
                 summary_data['status'] = False
             summary_data['exception']['count'] += 1
             summary_data['exception']['testcase_ids'].append(testcase.id)
-            run_testcases_result.append({'testcase_id': testcase.id, "exception": str(err)})
+            run_testcases_result.append(
+                {'testcase_id': testcase.id, 'testcase_name': testcase.testcase_name, "exception": str(err)})
     run_testsuite_result['summary_data'] = summary_data
     run_testsuite_result['run_testcases_result'] = run_testcases_result
     return run_testsuite_result

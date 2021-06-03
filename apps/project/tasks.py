@@ -33,8 +33,8 @@ def run_project(project_id, config_id=None, creator=None):
     testcases_all = []
     for testsuite in testsuites:
         testcases = TestCase.objects.filter(testsuite_id=testsuite.id)
-        print(repr(testcases))
-        print(testsuite.id)
+        # print(repr(testcases))
+        # print(testsuite.id)
         if len(testcases) == 0:
             # TODO 此处return欠妥，e.g. 某个项目下有3个套件，两个套件下用例不为空，另外一个套件下用例为空。
             #  此处为for循环，如果拿到用例为空会直接return，忽略了其他两个有用例的套件
@@ -84,7 +84,8 @@ def run_project(project_id, config_id=None, creator=None):
                     summary_data['testcase_info']['success']['testcase_ids'].append(testcase.id)
                     testsuite_summary_data['success']['count'] += 1
                     testsuite_summary_data['success']['testcase_ids'].append(testcase.id)
-                run_testcases_result.append({'testcase_id': testcase.id, 'data': res_data})
+                run_testcases_result.append(
+                    {'testcase_id': testcase.id, 'testcase_name': testcase.testcase_name, 'data': res_data})
             except ValidationError as err:
                 if summary_data['status'] is True:
                     summary_data['status'] = False
@@ -92,10 +93,12 @@ def run_project(project_id, config_id=None, creator=None):
                 summary_data['testcase_info']['exception']['testcase_ids'].append(testcase.id)
                 testsuite_summary_data['exception']['count'] += 1
                 testsuite_summary_data['exception']['testcase_ids'].append(testcase.id)
-                run_testcases_result.append({'testcase_id': testcase.id, 'exception': str(err)})
+                run_testcases_result.append(
+                    {'testcase_id': testcase.id, 'testcase_name': testcase.testcase_name, 'exception': str(err)})
         run_testsuite_result['summary_data'] = testsuite_summary_data
         run_testsuite_result['run_testcases_result'] = run_testcases_result
         run_testsuite_result['testsuite_id'] = testsuite.id
+        run_testsuite_result['testsuite_name'] = testsuite.testsuite_name
         run_testsuites_result.append(run_testsuite_result)
     run_project_result['summary_data'] = summary_data
     run_project_result['run_testsuites_result'] = run_testsuites_result

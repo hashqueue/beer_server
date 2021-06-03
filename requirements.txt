@@ -11,7 +11,7 @@ click-plugins==1.1.1
 click-repl==0.1.6
 coreapi==2.3.3
 coreschema==0.0.4
-Django==3.1.7
+Django==3.1.9
 django-celery-results==2.0.1
 django-cors-headers==3.7.0
 django-filter==2.4.0
@@ -32,7 +32,7 @@ mysqlclient==2.0.3
 packaging==20.9
 Pillow==8.1.2
 prompt-toolkit==3.0.18
-pydantic==1.8.1
+pydantic==1.8.2
 PyJWT==2.0.1
 pyparsing==2.4.7
 pyrsistent==0.17.3
@@ -45,6 +45,6 @@ six==1.15.0
 sqlparse==0.4.1
 typing-extensions==3.7.4.3
 uritemplate==3.0.1
-urllib3==1.26.4
+urllib3==1.26.5
 vine==5.0.0
 wcwidth==0.2.5

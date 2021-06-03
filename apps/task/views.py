@@ -21,10 +21,11 @@ class TasksViewSet(MyListRetrieveDestroyModelViewSet):
             for group_obj in self.request.user.groups.all():
                 for user_obj in group_obj.user_set.all():
                     users_list.append(user_obj.username)
-            # 当前登录用户所在的所有的用户组中所关联的所有用户集合
+            # 当前登录用户 所在的所有的用户组中 所关联的所有用户 的集合
+            # 默认展示当前用户 所在用户组内 所有组员的数据
             users_set = list(set(users_list))
-            queryset_list = []
-            for user in users_set:
-                queryset = TaskResult.objects.filter(task_kwargs__contains=user).order_by('-id')
-                queryset_list.extend(queryset)
-            return list(set(queryset_list))
+            queryset = TaskResult.objects.filter(task_kwargs__contains=users_set[0]).order_by('-id')
+            for user in users_set[1:]:
+                queryset = queryset | TaskResult.objects.filter(task_kwargs__contains=user).order_by('-id')
+            # print(queryset)
+            return queryset
