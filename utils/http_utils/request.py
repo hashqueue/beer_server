@@ -133,7 +133,6 @@ def handle_request_data_before_send_request(teststep, config, testcase_variables
             handle_global_or_testcase_variables(teststep=teststep, variables=global_variables)
             # 对函数进行调用，并替换为函数的返回值
             handle_global_functions(teststep=teststep, project_id=project_id)
-
         else:
             if testcase_variables != {}:
                 # 测试用例变量的优先级>全局变量：测试用例变量会覆盖全局变量(具体体现为：测试用例变量不为空时，优先于全局变量进行替换)
@@ -156,12 +155,13 @@ def handle_request_data_before_send_request(teststep, config, testcase_variables
 def handle_response_data_after_send_request(teststep_resp_obj, teststep, testcase_variables):
     """
     测试步骤发起请求后，对响应对象进行处理
-    @param teststep:
-    @param testcase_variables:
-    @param teststep_resp_obj:
+    @param teststep: 测试步骤对象
+    @param testcase_variables: 测试用例级别的变量
+    @param teststep_resp_obj: 测试步骤运行后生成的响应体数据 Type：dict
     @return:
     """
     teststep_validators_results = []
+    # 从响应体数据中截取需要的数据，用于 测试用例变量提取 和 断言 时使用
     resp_obj_data = {
         "status_code": teststep_resp_obj.get('response_status_code'),
         "response_headers": teststep_resp_obj.get('response_headers'),
@@ -190,8 +190,8 @@ def handle_response_data_after_send_request(teststep_resp_obj, teststep, testcas
                                                 'validator_expected_value': teststep_validator.expected_value,
                                                 'validator_result': res
                                                 })
+        # 直接修改响应体数据，不return
         teststep_resp_obj['teststep_validators_results'] = teststep_validators_results
-    return teststep_resp_obj
 
 
 def run_teststep(teststep, config, testcase_variables):
