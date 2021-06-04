@@ -27,6 +27,10 @@ class TestCaseSerializer(BaseModelSerializer):
     teststeps = TestStepSerializer(many=True)
     testsuite_name = serializers.CharField(source='testsuite.testsuite_name', required=False, read_only=True,
                                            help_text='所属套件的名称')
+    project_id = serializers.IntegerField(source='testsuite.project.id', required=False, read_only=True,
+                                          help_text='所属项目的ID')
+    project_name = serializers.CharField(source='testsuite.project.project_name', required=False, read_only=True,
+                                         help_text='所属项目的名称')
 
     class Meta:
         model = TestCase
