@@ -32,16 +32,15 @@ def parse_request_url(url_path: str = None) -> str:
         raise ValidationError({url_path: "测试步骤中的url_path未以`http(s)://`开头"}, code=400)
 
 
-def regx_variables(raw_text: str, variables: dict, is_json: bool = False) -> Any:
+def regx_variables_detail(raw_text: str, need_replace_vars_list: list, variables: dict, is_json: bool = False) -> Any:
     """
-    对请求数据中引用了全局变量或测试用例变量的数据进行解析，然后替换为全局变量或测试用例变量中变量的具体的值
+    只有全局变量存在 或 只有测试用例级别变量存在 时调用此方法
+    @param raw_text:
+    @param need_replace_vars_list:
+    @param variables:
     @param is_json:
-    @param variables: 可选的全局变量或测试用例变量
-    @param raw_text: 请求数据中需要进行解析替换为全局变量或测试用例变量值的数据
-    @return: 已完成替换的请求数据
+    @return:
     """
-    need_replace_vars_list = re.findall(r'\$(\w+)', raw_text)
-    # print(need_replace_vars_list)
     for raw_variable in need_replace_vars_list:
         for key in variables.keys():
             if key in raw_variable:
@@ -69,6 +68,36 @@ def regx_variables(raw_text: str, variables: dict, is_json: bool = False) -> Any
                 raw_text = re.sub(r'\$' + raw_variable, str(variables[raw_variable]), raw_text)
         except KeyError as err:
             raise ValidationError({raw_text: f"未找到{raw_variable}变量, err_detail: {err}"}, code=400)
+    return raw_text
+
+
+def regx_variables(raw_text: str, testcase_variables: dict, global_variables: dict, is_json: bool = False) -> Any:
+    """
+    对请求数据中引用了全局变量或测试用例变量的数据进行解析，然后替换为全局变量或测试用例变量中变量的具体的值
+    @param is_json:
+    @param testcase_variables: 可选的测试用例变量
+    @param global_variables: 可选的全局变量
+    @param raw_text: 请求数据中需要进行解析替换为全局变量或测试用例变量值的数据
+    @return: 已完成替换的请求数据
+    """
+    need_replace_vars_list = re.findall(r'\$(\w+)', raw_text)
+    # print(need_replace_vars_list)
+    if len(need_replace_vars_list) != 0:
+        if global_variables:
+            if testcase_variables:
+                # 测试用例变量和全局变量都存在，因为测试用例变量的优先级大于全局变量，所以将测试用例变量更新覆盖到全局变量里
+                merge_two_type_variables = global_variables
+                merge_two_type_variables.update(testcase_variables)
+                raw_text = regx_variables_detail(raw_text=raw_text, need_replace_vars_list=need_replace_vars_list,
+                                                 variables=merge_two_type_variables, is_json=is_json)
+            else:
+                # 只有全局变量存在
+                raw_text = regx_variables_detail(raw_text=raw_text, need_replace_vars_list=need_replace_vars_list,
+                                                 variables=global_variables, is_json=is_json)
+        else:
+            # 只有测试用例变量存在
+            raw_text = regx_variables_detail(raw_text=raw_text, need_replace_vars_list=need_replace_vars_list,
+                                             variables=testcase_variables, is_json=is_json)
     return raw_text
 
 

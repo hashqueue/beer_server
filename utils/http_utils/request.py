@@ -52,35 +52,43 @@ def send_request(teststep, timeout=120):
         return {"RequestException": str(err)}
 
 
-def handle_global_or_testcase_variables(teststep, variables):
+def handle_global_or_testcase_variables(teststep, testcase_variables=None, global_variables=None):
     """
     对测试步骤中引用的全局变量(1.项目级别配置的全局变量 2.测试用例级别配置的全局变量===>来源于对测试步骤响应结果的提取)进行解析和替换
     @param teststep: 测试步骤对象
-    @param variables: 全局函数 ===> dict
+    @param testcase_variables: 测试用例级别变量 ===> dict
+    @param global_variables: 全局变量 ===> dict
     @return: 直接修改测试步骤对象，无返回值
     """
     # 批量替换测试步骤中引用的全局变量
     # 对请求的url_path进行解析替换,如果没有可用全局变量,则返回原始值
-    teststep.url_path = regx_variables(teststep.url_path, variables=variables)
+    teststep.url_path = regx_variables(teststep.url_path, testcase_variables=testcase_variables,
+                                       global_variables=global_variables)
     # 判断url_path是否符合要求
     teststep.url_path = parse_request_url(url_path=teststep.url_path)
     if teststep.json:
         if isinstance(teststep.json, str):
             teststep.json = json.loads(teststep.json)
         json_data = json.dumps(teststep.json)
-        teststep.json = json.loads(regx_variables(json_data, variables=variables, is_json=True))
+        teststep.json = json.loads(
+            regx_variables(json_data, testcase_variables=testcase_variables, global_variables=global_variables,
+                           is_json=True))
     if teststep.params:
         params_to_json_data = json.dumps(teststep.params)
-        teststep.params = json.loads(regx_variables(params_to_json_data, variables=variables))
+        teststep.params = json.loads(regx_variables(params_to_json_data, testcase_variables=testcase_variables,
+                                                    global_variables=global_variables))
     if teststep.data:
         data_to_json_data = json.dumps(teststep.data)
-        teststep.data = json.loads(regx_variables(data_to_json_data, variables=variables))
+        teststep.data = json.loads(regx_variables(data_to_json_data, testcase_variables=testcase_variables,
+                                                  global_variables=global_variables))
     if teststep.headers:
         headers_to_json_data = json.dumps(teststep.headers)
-        teststep.headers = json.loads(regx_variables(headers_to_json_data, variables=variables))
+        teststep.headers = json.loads(regx_variables(headers_to_json_data, testcase_variables=testcase_variables,
+                                                     global_variables=global_variables))
     if teststep.cookies:
         cookies_to_json_data = json.dumps(teststep.cookies)
-        teststep.cookies = json.loads(regx_variables(cookies_to_json_data, variables=variables))
+        teststep.cookies = json.loads(regx_variables(cookies_to_json_data, testcase_variables=testcase_variables,
+                                                     global_variables=global_variables))
 
 
 def handle_global_functions(teststep, project_id):
@@ -129,25 +137,27 @@ def handle_request_data_before_send_request(teststep, config, testcase_variables
         if func_queryset_length == 1:  # 该测试步骤所在的项目下配置了全局函数
             if testcase_variables != {}:
                 # 测试用例变量的优先级>全局变量：测试用例变量会覆盖全局变量(具体体现为：测试用例变量不为空时，优先于全局变量进行替换)
-                handle_global_or_testcase_variables(teststep=teststep, variables=testcase_variables)
-            handle_global_or_testcase_variables(teststep=teststep, variables=global_variables)
+                handle_global_or_testcase_variables(teststep=teststep, testcase_variables=testcase_variables,
+                                                    global_variables=global_variables)
+            handle_global_or_testcase_variables(teststep=teststep, global_variables=global_variables)
             # 对函数进行调用，并替换为函数的返回值
             handle_global_functions(teststep=teststep, project_id=project_id)
         else:
             if testcase_variables != {}:
                 # 测试用例变量的优先级>全局变量：测试用例变量会覆盖全局变量(具体体现为：测试用例变量不为空时，优先于全局变量进行替换)
-                handle_global_or_testcase_variables(teststep=teststep, variables=testcase_variables)
-            handle_global_or_testcase_variables(teststep=teststep, variables=global_variables)
+                handle_global_or_testcase_variables(teststep=teststep, testcase_variables=testcase_variables,
+                                                    global_variables=global_variables)
+            handle_global_or_testcase_variables(teststep=teststep, global_variables=global_variables)
     else:
         # 未使用配置时，需要判断是否有引用了测试用例级别的变量
         if testcase_variables != {}:
             if func_queryset_length == 1:  # 该测试步骤所在的项目下配置了全局函数
                 # 测试用例变量的优先级>全局变量：测试用例变量会覆盖全局变量
-                handle_global_or_testcase_variables(teststep=teststep, variables=testcase_variables)
+                handle_global_or_testcase_variables(teststep=teststep, testcase_variables=testcase_variables)
                 handle_global_functions(teststep=teststep, project_id=project_id)
             else:
                 # 测试用例变量的优先级>全局变量：测试用例变量会覆盖全局变量
-                handle_global_or_testcase_variables(teststep=teststep, variables=testcase_variables)
+                handle_global_or_testcase_variables(teststep=teststep, testcase_variables=testcase_variables)
     # 发送请求时：判断url_path是否符合要求
     teststep.url_path = parse_request_url(url_path=teststep.url_path)
 
