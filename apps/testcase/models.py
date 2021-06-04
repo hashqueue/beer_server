@@ -9,7 +9,7 @@ from testsuite.models import TestSuite
 class TestCase(BaseModel):
     testcase_name = models.CharField(max_length=128, verbose_name='测试用例名称', help_text='测试用例名称')
     testcase_desc = models.CharField(max_length=128, blank=True, default='', verbose_name='测试用例描述', help_text='测试用例描述')
-    testsuite = models.ForeignKey(to=TestSuite, on_delete=models.CASCADE, verbose_name='所属套件', help_text='所属套件')
+    testsuite = models.ForeignKey(to=TestSuite, on_delete=models.CASCADE, verbose_name='所属套件ID', help_text='所属套件ID')
 
     class Meta:
         db_table = 'testcase_info'

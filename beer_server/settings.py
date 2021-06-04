@@ -31,6 +31,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
+# 全局设置自动创建的主键的类型为BigAutoField ===> Django3.2新增
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Application definition
 
@@ -52,14 +54,13 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'django_celery_results',
 
-    'user.apps.UserConfig',
-    'project.apps.ProjectConfig',
-    'testsuite.apps.TestsuiteConfig',
-    'testcase.apps.TestcaseConfig',
-    'config.apps.ConfigConfig',
-    'task.apps.TaskConfig',
-    'functions.apps.FunctionsConfig',
-    'group.apps.GroupConfig'
+    'user',
+    'project',
+    'testsuite',
+    'testcase',
+    'config',
+    'task',
+    'functions'
 ]
 
 SPECTACULAR_SETTINGS = {
@@ -106,9 +107,9 @@ AUTHENTICATION_BACKENDS = [
 
 # djangorestframework-simplejwt配置
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=15),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     # 将refresh token的有效期改为2天
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=2),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': True,
 }
 
