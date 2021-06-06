@@ -250,13 +250,13 @@ def validate_resp_data(resp_data, validator_type, jmespath_expression, expected_
         # TODO regex(正则)
         elif validator_type == 'regex_match':
             pass
-        return {'status': True, 'err': None}
+        return {'status': True, 'actual_value': actual_value, 'err': None}
     except AssertionError as err2:
-        return {'status': False, 'err': f'AssertionError：`{str(err2)}`'}
+        return {'status': False, 'actual_value': actual_value, 'err': f'AssertionError：`{str(err2)}`'}
     except TypeError as err3:
-        return {'status': False, 'err': f'TypeError(数据类型转换时发生异常)：`{str(err3)}`'}
+        return {'status': False, 'actual_value': actual_value, 'err': f'TypeError(数据类型转换时发生异常)：`{str(err3)}`'}
     except Exception as err4:
-        return {'status': False, 'err': f'Error：`{str(err4)}`'}
+        return {'status': False, 'actual_value': actual_value, 'err': f'Error：`{str(err4)}`'}
 
 
 if __name__ == '__main__':

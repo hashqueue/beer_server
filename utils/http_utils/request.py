@@ -233,8 +233,17 @@ def run_testcase(testcase, config=None):
     if len(teststeps) == 0:
         raise ValidationError({'Error': '测试用例的测试步骤不能为空'}, code=400)
     for teststep in teststeps:
+        status = True
         teststep_resp_data = run_teststep(teststep, config, testcase_variables)
+        # 判断是否有断言结果
+        if teststep_resp_data.get('teststep_validators_results', False):
+            for validate_result in teststep_resp_data.get('teststep_validators_results'):
+                if not validate_result.get('validator_result').get('status'):
+                    if status is True:
+                        # 只要有一个断言失败，此用例执行状态就为失败
+                        status = False
         teststep_resp_data['teststep_id'] = teststep.id
         teststep_resp_data['teststep_name'] = teststep.teststep_name
+        teststep_resp_data['status'] = status
         testcase_resp_datas.append(teststep_resp_data)
     return testcase_resp_datas
