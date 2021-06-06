@@ -104,7 +104,6 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-
 # djangorestframework-simplejwt配置
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
@@ -153,7 +152,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'beer_server.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
@@ -167,7 +165,6 @@ DATABASES = {
         'PASSWORD': '123123'
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -186,7 +183,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
@@ -215,3 +211,71 @@ STATIC_URL = '/static/'
 # 配置图片文件上传的存储路径
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'media')
 MEDIA_URL = '/media/'
+
+# django中的日志配置
+LOGGING = {
+    'version': 1,
+    # 禁用已经存在的logger实例
+    'disable_existing_loggers': False,
+    # 日志显示格式
+    'formatters': {
+        # 简单格式
+        'simple': {
+            'format': '%(asctime)s - [%(levelname)s] - [msg]%(message)s'
+        },
+        # 详细格式
+        'verbose': {
+            'format': '%(asctime)s - [%(levelname)s] - %(name)s - [msg]%(message)s - [%(filename)s: %(lineno)d]'
+        },
+    },
+    # 过滤器
+    'filters': {
+        # 当 settings.DEBUG 为 False 时，该过滤器才会传递记录。
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        }
+    },
+    'handlers': {
+        # 只有debug=False且Error级别以上发邮件给admin
+        "mail_admins": {
+            "level": "ERROR",
+            "filters": ["require_debug_false"],
+            "class": "django.utils.log.AdminEmailHandler",
+        },
+        'console': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'file': {
+            'level': 'INFO',
+            # 滚动生成日志，切割
+            'class': 'logging.handlers.RotatingFileHandler',
+            # 存放日志文件的位置
+            'filename': os.path.join(BASE_DIR, 'logs', 'app.log'),
+            # 单个日志文件最大为10M
+            'maxBytes': 10 * 1024 * 1024,
+            # 这100M分布在10个文件中，如果第10个文件也用完的话，就会从第1个文件重新开始写入日志，形成循环
+            'backupCount': 10,
+            'formatter': 'verbose',
+            'encoding': 'utf-8'
+        },
+    },
+    'loggers': {
+        # 定义了一个名为mytest的日志器
+        'mytest': {
+            'handlers': ['console', 'file'],
+            # 启用日志轮转机制
+            'propagate': True,
+            # 日志器接收的最低日志级别
+            'level': 'DEBUG',
+        },
+        # 将所有 ERROR 消息传递给 mail_admins 处理程序。
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    }
+}
