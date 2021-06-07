@@ -52,14 +52,16 @@ class ProjectsViewSet(CustomModelViewSet):
             # 选择某个配置来运行项目
             async_result = run_project.delay(project_id=get_object_or_404(Project, pk=pk).id,
                                              config_id=get_object_or_404(Config, pk=request.data.get('config_id')).id,
-                                             creator=request.user.username)
+                                             creator=request.user.username,
+                                             creator_email=request.user.email)
             return JsonResponse(data={"task_id": async_result.task_id}, code=20000,
                                 msg=f'启动运行项目任务成功,任务id为{async_result.task_id},请稍后查看任务运行结果',
                                 status=status.HTTP_202_ACCEPTED)
         else:
             # 不选择配置直接执行项目
             async_result = run_project.delay(project_id=get_object_or_404(Project, pk=pk).id,
-                                             creator=request.user.username)
+                                             creator=request.user.username,
+                                             creator_email=request.user.email)
             return JsonResponse(data={"task_id": async_result.task_id}, code=20000,
                                 msg=f'启动运行项目任务成功,任务id为{async_result.task_id},请稍后查看任务运行结果',
                                 status=status.HTTP_202_ACCEPTED)

@@ -4,6 +4,7 @@
 # @File    : tasks.py
 # @Software: PyCharm
 # @Description:
+from django.core.mail import send_mail
 from celery import shared_task
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
@@ -11,12 +12,15 @@ from rest_framework.generics import get_object_or_404
 from testcase.models import TestCase
 from config.models import Config
 from utils.http_utils.request import run_testcase
+from beer_server.settings import config as config_file
 
 
-@shared_task
-def run_testsuite(testsuite_id, config_id=None, creator=None):
+@shared_task(bind=True)
+def run_testsuite(self, testsuite_id, config_id=None, creator=None, creator_email=None):
     """
     异步运行测试套件
+    @param creator_email: 任务创建者邮箱地址
+    @param self: 装饰器中添加bind此参数后，可以通过self访问有关当前任务请求的信息
     @param creator: 任务创建者
     @param testsuite_id:测试套件id
     @param config_id:配置项id
@@ -31,7 +35,8 @@ def run_testsuite(testsuite_id, config_id=None, creator=None):
     run_testsuite_result = {}
     run_testcases_result = []
     # 汇总数据
-    summary_data = {'status': True, 'count': len(testcases), 'success': {'count': 0, 'testcase_ids': []},
+    summary_data = {'status': True, 'creator': creator, 'count': len(testcases),
+                    'success': {'count': 0, 'testcase_ids': []},
                     'exception': {'count': 0, 'testcase_ids': []},
                     'failure': {'count': 0, 'testcase_ids': []}}
     for testcase in testcases:
@@ -61,4 +66,21 @@ def run_testsuite(testsuite_id, config_id=None, creator=None):
                 {'testcase_id': testcase.id, 'testcase_name': testcase.testcase_name, "exception": str(err)})
     run_testsuite_result['summary_data'] = summary_data
     run_testsuite_result['run_testcases_result'] = run_testcases_result
+    if creator_email:
+        html_text = f"""<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<p>Hi，您启动的接口测试任务已运行完成，请点击
+  <a href="{config_file.get_string_value('email', 'FE_TASK_DETAIL_BASEURL')}{self.request.id}"
+     style="color: red; text-decoration: none;" target="_blank">测试报告详情</a>进行查看。
+</p>
+</body>
+</html>
+"""
+        # 发送测试报告链接到当前任务创建者的邮箱里
+        send_mail('接口测试报告', '接口测试报告', None, [creator_email], html_message=html_text)
     return run_testsuite_result

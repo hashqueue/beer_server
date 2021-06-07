@@ -12,6 +12,8 @@ class TasksViewSet(MyListRetrieveDestroyModelViewSet):
     queryset = TaskResult.objects.none()  # 无效变量，纯粹是为了接口文档不报错
     serializer_class = TaskSerializer
     permission_classes = [permissions.IsAuthenticated]
+    # 默认pk为id字段，通过lookup_field替换id字段为task_id
+    lookup_field = 'task_id'
 
     def get_queryset(self):
         if self.request.user.is_superuser is True:

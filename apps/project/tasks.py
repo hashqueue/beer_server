@@ -5,6 +5,7 @@
 # @Software: PyCharm
 # @Description:
 
+from django.core.mail import send_mail
 from celery import shared_task
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
@@ -13,12 +14,15 @@ from testcase.models import TestCase
 from testsuite.models import TestSuite
 from config.models import Config
 from utils.http_utils.request import run_testcase
+from beer_server.settings import config as config_file
 
 
-@shared_task
-def run_project(project_id, config_id=None, creator=None):
+@shared_task(bind=True)
+def run_project(self, project_id, config_id=None, creator=None, creator_email=None):
     """
     异步运行项目
+    @param self: 装饰器中添加bind此参数后，可以通过self访问有关当前任务请求的信息
+    @param creator_email: 任务创建者邮箱地址
     @param project_id: 项目id
     @param creator: 任务创建者
     @param config_id:配置项id
@@ -102,4 +106,21 @@ def run_project(project_id, config_id=None, creator=None):
         run_testsuites_result.append(run_testsuite_result)
     run_project_result['summary_data'] = summary_data
     run_project_result['run_testsuites_result'] = run_testsuites_result
+    if creator_email:
+        html_text = f"""<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<p>Hi，您启动的接口测试任务已运行完成，请点击
+  <a href="{config_file.get_string_value('email', 'FE_TASK_DETAIL_BASEURL')}{self.request.id}"
+     style="color: red; text-decoration: none;" target="_blank">测试报告详情</a>进行查看。
+</p>
+</body>
+</html>
+"""
+        # 发送测试报告链接到当前任务创建者的邮箱里
+        send_mail('接口测试报告', '接口测试报告', None, [creator_email], html_message=html_text)
     return run_project_result

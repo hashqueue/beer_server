@@ -14,8 +14,12 @@ import sys
 from datetime import timedelta
 from pathlib import Path
 
+from utils.django_utils.handle_config import HandleConfig
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+config = HandleConfig(file_name=os.path.join(BASE_DIR, 'beer_server/config.ini'))
 
 # 添加apps目录到python的里去
 sys.path.insert(0, os.path.join(BASE_DIR, 'apps/'))
@@ -24,12 +28,27 @@ sys.path.insert(0, os.path.join(BASE_DIR, 'apps/'))
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'v3fe8wwf94y4moc8xcwst4#2*ge1*8tx)!@*4%x1$+ts*d^^cg'
+SECRET_KEY = config.get_string_value('secret_key', 'SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
+
+# 当 DEBUG=False 和 AdminEmailHandler 中设置了 LOGGING 时 给ADMINS收件人列表发送邮件
+ADMINS = [tuple(item.split(',')) for item in config.get_string_value('email', 'ADMINS').split(' # ')]
+# 指定当 BrokenLinkEmailsMiddleware 被启用时，谁应该收到断链通知。
+MANAGERS = ADMINS
+
+# 邮箱服务配置
+EMAIL_HOST = config.get_string_value('email', 'EMAIL_HOST')
+EMAIL_PORT = config.get_int_value('email', 'EMAIL_PORT')
+EMAIL_HOST_USER = config.get_string_value('email', 'EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config.get_string_value('email', 'EMAIL_HOST_PASSWORD')
+EMAIL_USE_SSL = True
+# SERVER_EMAIL：发送错误信息使用的email地址
+SERVER_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # 全局设置自动创建的主键的类型为BigAutoField ===> Django3.2新增
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -157,12 +176,12 @@ WSGI_APPLICATION = 'beer_server.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-        'NAME': 'beer',
-        'USER': 'root',
-        'PASSWORD': '123123'
+        'ENGINE': config.get_string_value('database', 'ENGINE'),
+        'HOST': config.get_string_value('database', 'HOST'),
+        'PORT': config.get_string_value('database', 'PORT'),
+        'NAME': config.get_string_value('database', 'NAME'),
+        'USER': config.get_string_value('database', 'USER'),
+        'PASSWORD': config.get_string_value('database', 'PASSWORD')
     }
 }
 
@@ -212,70 +231,76 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'media')
 MEDIA_URL = '/media/'
 
+# 创建log文件的文件夹
+LOG_DIR = os.path.join(BASE_DIR, "logs")
+if not os.path.exists(LOG_DIR):
+    os.mkdir(LOG_DIR)
+
 # django中的日志配置
 LOGGING = {
     'version': 1,
-    # 禁用已经存在的logger实例
+    # 是否禁用已经存在的logger实例
     'disable_existing_loggers': False,
     # 日志显示格式
     'formatters': {
         # 简单格式
         'simple': {
-            'format': '%(asctime)s - [%(levelname)s] - [msg]%(message)s'
+            'format': '{asctime} - {levelname} - {message}',
+            'style': '{',
         },
         # 详细格式
         'verbose': {
-            'format': '%(asctime)s - [%(levelname)s] - %(name)s - [msg]%(message)s - [%(filename)s: %(lineno)d]'
+            'format': '{asctime} - {levelname} - {name} - [msg: {message}] - [{filename}: {lineno:d}]',
+            'style': '{',
         },
     },
-    # 过滤器
     'filters': {
-        # 当 settings.DEBUG 为 False 时，该过滤器才会传递记录。
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse',
-        }
+        },
     },
     'handlers': {
         # 只有debug=False且Error级别以上发邮件给admin
         "mail_admins": {
             "level": "ERROR",
-            "filters": ["require_debug_false"],
+            'filters': ['require_debug_false'],
             "class": "django.utils.log.AdminEmailHandler",
         },
         'console': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'filters': ['require_debug_true'],
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
         'file': {
+            'filters': ['require_debug_false'],
             'level': 'INFO',
             # 滚动生成日志，切割
             'class': 'logging.handlers.RotatingFileHandler',
             # 存放日志文件的位置
             'filename': os.path.join(BASE_DIR, 'logs', 'app.log'),
-            # 单个日志文件最大为10M
-            'maxBytes': 10 * 1024 * 1024,
-            # 这100M分布在10个文件中，如果第10个文件也用完的话，就会从第1个文件重新开始写入日志，形成循环
+            'maxBytes': 100 * 1024 * 1024,
             'backupCount': 10,
             'formatter': 'verbose',
             'encoding': 'utf-8'
         },
     },
     'loggers': {
-        # 定义了一个名为mytest的日志器
-        'mytest': {
+        # 自定义日志器，可以在代码中通过logging.getLogger("my_logger")使用
+        'my_logger': {
             'handlers': ['console', 'file'],
             # 启用日志轮转机制
             'propagate': True,
             # 日志器接收的最低日志级别
-            'level': 'DEBUG',
+            'level': 'INFO'
         },
-        # 将所有 ERROR 消息传递给 mail_admins 处理程序。
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': False,
+        'django': {
+            'handlers': ['mail_admins', 'file', 'console'],
+            'level': 'INFO',
+            'propagate': True
         },
     }
 }
