@@ -1,81 +1,78 @@
-version: "1"
+version: "3.8"
 
-volumes: # 自定义数据卷
-  db_vol: #定义数据卷同步存放容器内mysql数据
-  rabbitmq_vol: #定义数据卷同步存放rabbitmq数据
-  media_vol: #定义数据卷同步存放web项目用户上传到media文件夹的数据
-  static_vol: #定义数据卷同步存放web项目static文件夹的数据
-
-networks: # 自定义网络(默认桥接), 不使用links通信
-  nginx_network:
-    driver: bridge
-  db_network:
-    driver: bridge
-  rabbitmq_network:
+# 自定义网络(默认桥接), 不使用links通信
+networks:
+  beer_net:
     driver: bridge
 
 services:
   rabbitmq:
     image: rabbitmq:latest
-    command: redis-server /etc/redis/redis.conf # 容器启动后启动redis服务器
+    hostname: rabbitmq
+    container_name: rabbitmq
     networks:
-      - redis_network
+      - beer_net
+    # 通过挂载数据卷备份rabbitmq数据
     volumes:
-      - redis_vol:/data # 通过挂载给redis数据备份
-      - ./compose/redis/redis.conf:/etc/redis/redis.conf # 挂载redis配置文件
+      - $PWD/rabbitmq:/var/lib/rabbitmq
     ports:
-      - "6379:6379"
-    restart: always # always表容器运行发生错误时一直重启
-
-  db:
-    image: mysql
-    env_file:
-      - ./myproject/.env # 使用了环境变量文件
-    networks:
-      - db_network
-    volumes:
-      - db_vol:/var/lib/mysql:rw # 挂载数据库数据, 可读可写
-      - ./compose/mysql/conf/my.cnf:/etc/mysql/my.cnf # 挂载配置文件
-      - ./compose/mysql/init:/docker-entrypoint-initdb.d/ # 挂载数据初始化sql脚本
-    ports:
-      - "3306:3306" # 与配置文件保持一致
+      - "5672:5672"
+      - "15672:15672"
+    # always表容器运行发生错误时一直重启
     restart: always
+    tty: true
+    stdin_open: true
 
-  web:
-    build: ./myproject
-    expose:
-      - "8000"
-    volumes:
-      - ./myproject:/var/www/html/myproject # 挂载项目代码
-      - static_vol:/var/www/html/myproject/static # 以数据卷挂载容器内static文件
-      - media_vol:/var/www/html/myproject/media # 以数据卷挂载容器内用户上传媒体文件
-      - ./compose/uwsgi:/tmp # 挂载uwsgi日志
+  mysql:
+    image: mysql:latest
+    hostname: mysql
+    container_name: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: admin.191215.*
+      MYSQL_DATABASE: beer
     networks:
-      - nginx_network
-      - db_network
-      - redis_network
+      - beer_net
+    volumes:
+      - $PWD/mysql/logs:/logs
+      - $PWD/mysql/data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    restart: always
+    tty: true
+    stdin_open: true
+
+  beer:
+    # 项目根目录下的Dockerfile
+    build: .
+    container_name: beer
+    hostname: beer
+    volumes:
+      - $PWD:/root/beer_server
+    networks:
+      - beer_net
     depends_on:
-      - db
-      - redis
+      - mysql
+      - rabbitmq
+    ports:
+      - "8000:8000"
     restart: always
     tty: true
     stdin_open: true
 
   nginx:
     build: ./compose/nginx
+    hostname: nginx
+    container_name: nginx
     ports:
       - "80:80"
       - "443:443"
-    expose:
-      - "80"
     volumes:
-      - ./compose/nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf # 挂载nginx配置文件
-      - ./compose/nginx/ssl:/usr/share/nginx/ssl # 挂载ssl证书目录
-      - ./compose/nginx/log:/var/log/nginx # 挂载日志
-      - static_vol:/usr/share/nginx/html/static # 挂载静态文件
-      - media_vol:/usr/share/nginx/html/media # 挂载用户上传媒体文件
+      - $PWD/beer-web/dist:/html/dist
     networks:
-      - nginx_network
+      - beer_net
     depends_on:
-      - web
+      - beer
     restart: always
+    tty: true
+    stdin_open: true
