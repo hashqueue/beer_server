@@ -31,7 +31,7 @@ sys.path.insert(0, os.path.join(BASE_DIR, 'apps/'))
 SECRET_KEY = config.get_string_value('secret_key', 'SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config.get_boolean_value('deploy', 'DEBUG')
 
 ALLOWED_HOSTS = ["*"]
 

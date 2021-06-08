@@ -1,0 +1,3 @@
+# 自定义django项目中不需要打包进镜像的文件
+/compose
+/static
