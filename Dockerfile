@@ -10,7 +10,5 @@ RUN mv /etc/apt/sources.list /etc/apt/sources.list.bak \
     && apt install -y netcat \
     && pip3 install -i https://pypi.douban.com/simple -U pip \
     && pip3 install -i https://pypi.douban.com/simple -r requirements.txt \
-    && python3 manage.py collectstatic --noinput \
-    && echo "收集静态文件完毕。" \
     && chmod +x ./start_server.sh
 CMD ["/bin/bash", "./start_server.sh"]

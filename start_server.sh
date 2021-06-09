@@ -1,8 +1,11 @@
 #!/bin/bash
-# 1. 等待MySQL服务启动后再进行数据迁移。nc(即netcat缩写)端口扫描
-# 2. 收集静态文件到根目录static文件夹
-# 3. 进行数据迁移并初始化管理员数据和全局函数文件数据
+# 1. 收集静态文件到根目录static文件夹
+# 2. 等待MySQL服务启动后再进行数据迁移。nc(即netcat缩写)端口扫描
+# 3. 启动celery异步任务队列服务
+# 4. 进行数据迁移并初始化管理员数据和全局函数文件数据
 # 5. 用 gunicorn 启动 django 服务
+
+python3 manage.py collectstatic --noinput && echo "收集静态文件完毕。"
 
 # 获取当前容器CPU核数
 cpu_core_nums=$(cat /proc/cpuinfo | grep "cores" | uniq | awk '{print $4}')
@@ -19,9 +22,9 @@ while ! nc -z rabbitmq 5672 ; do
     sleep 3
 done
 
-echo "rabbitmq服务已启动完毕。即将开始部署Django项目。"
+echo "rabbitmq服务已启动完毕。"
 nohup celery -A beer_server worker -l INFO >> celery.log 2>&1 &
-echo "启动Celery异步任务队列服务完毕。"
+echo "启动Celery异步任务队列服务完毕。即将开始部署Django项目。"
 
 python3 manage.py makemigrations \
   && python3 manage.py migrate \
