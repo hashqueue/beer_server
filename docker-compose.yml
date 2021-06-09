@@ -47,8 +47,9 @@ services:
     build: .
     container_name: beer
     hostname: beer
+    # 将django后端收集到的静态文件持久化到本地，供nginx部署时使用
     volumes:
-      - $PWD:/root/beer_server
+      - $PWD/beer-web/dist/static:/root/beer_server/static
     networks:
       - beer_net
     depends_on:
