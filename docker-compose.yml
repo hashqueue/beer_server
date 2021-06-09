@@ -52,6 +52,7 @@ services:
       - $PWD/beer-web/dist/static:/root/beer_server/static
       - $PWD/logs:/root/beer_server/logs
       - $PWD/global_funcs:/root/beer_server/global_funcs
+      - $PWD/beer_server:/root/beer_server/beer_server
     networks:
       - beer_net
     depends_on:
