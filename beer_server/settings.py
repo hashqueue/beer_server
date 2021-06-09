@@ -226,6 +226,7 @@ CELERY_RESULT_BACKEND = 'django-db'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 # 配置图片文件上传的存储路径
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'media')
