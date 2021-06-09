@@ -3,4 +3,6 @@
 /static
 /.git
 /beer-web
+/mysql
+/rabbitmq
 **/__pycache__

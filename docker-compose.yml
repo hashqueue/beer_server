@@ -50,7 +50,7 @@ services:
     # 将django后端收集到的静态文件持久化到本地，供nginx部署时使用
     volumes:
       - $PWD/beer-web/dist/static:/root/beer_server/static
-      - $PWD/beer_server/config.ini:/root/beer_server/beer_server/config.ini
+      - $PWD/beer_server:/root/beer_server/beer_server
     networks:
       - beer_net
     depends_on:
