@@ -19,7 +19,7 @@ services:
       - "5672:5672"
       - "15672:15672"
     # always表容器运行发生错误时一直重启
-    restart: always
+    #    restart: always
     tty: true
     stdin_open: true
 
@@ -58,7 +58,7 @@ services:
       - rabbitmq
     ports:
       - "8000:8000"
-    restart: always
+    #    restart: always
     tty: true
     stdin_open: true
 
@@ -75,6 +75,6 @@ services:
       - beer_net
     depends_on:
       - beer
-    restart: always
+    #    restart: always
     tty: true
     stdin_open: true
