@@ -9,4 +9,4 @@ RUN mv /etc/apt/sources.list /etc/apt/sources.list.bak \
     && echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian-security buster/updates main contrib non-free" >> /etc/apt/sources.list \
     && apt update \
     && apt install -y netcat
-CMD ["/bin/bash", "./deploy_server.sh"]
+CMD ["/sh", "./deploy_server.sh"]
