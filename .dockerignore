@@ -7,6 +7,3 @@ LICENSE
 Dockerfile
 .dockerignore
 README.md
-/mysql
-/rabbitmq
-**/__pycache__

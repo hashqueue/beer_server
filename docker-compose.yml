@@ -14,7 +14,7 @@ services:
       - beer_net
     # 通过挂载数据卷备份rabbitmq数据
     volumes:
-      - $PWD/rabbitmq:/var/lib/rabbitmq
+      - ./compose/rabbitmq:/var/lib/rabbitmq
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -34,8 +34,8 @@ services:
     networks:
       - beer_net
     volumes:
-      - $PWD/mysql/logs:/logs
-      - $PWD/mysql/data:/var/lib/mysql
+      - ./compose/mysql/logs:/logs
+      - ./compose/mysql/data:/var/lib/mysql
     ports:
       - "3306:3306"
     #    restart: always
@@ -49,10 +49,13 @@ services:
     hostname: beer
     # 将django后端收集到的静态文件持久化到本地，供nginx部署时使用
     volumes:
-      - $PWD/beer-web/dist/static:/root/beer_server/static
-      - $PWD/logs:/root/beer_server/logs
-      - $PWD/global_funcs:/root/beer_server/global_funcs
-      - $PWD/beer_server:/root/beer_server/beer_server
+      - ./beer-web/dist/static/admin:/root/beer_server/static/admin
+      - ./beer-web/dist/static/grappelli:/root/beer_server/static/grappelli
+      - ./beer-web/dist/static/rest_framework:/root/beer_server/static/rest_framework
+      - ./beer-web/dist/static/media:/root/beer_server/static/media
+      - ./compose/server/logs:/root/beer_server/logs
+      - ./compose/server/global_funcs:/root/beer_server/global_funcs
+      - ./compose/server/settings:/root/beer_server/beer_server
     networks:
       - beer_net
     depends_on:
@@ -72,8 +75,9 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - $PWD/beer-web/dist:/html/dist
-      - $PWD/compose/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./beer-web/dist:/usr/share/nginx/html
+      - ./compose/nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf
+      - ./compose/nginx/log:/var/log/nginx
     networks:
       - beer_net
     depends_on:
