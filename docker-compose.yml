@@ -47,14 +47,6 @@ services:
     build: .
     container_name: beer
     hostname: beer
-    command: /bin/bash deploy_server.sh \
-      && python3 manage.py makemigrations \
-      && python3 manage.py migrate \
-      && echo "项目数据迁移完毕。" \
-      && python3 manage.py init_admin \
-      && python3 manage.py update_global_function_content \
-      && echo "初始化系统管理员数据和全局函数文件完毕。" \
-      && gunicorn --workers=3 --bind=0.0.0.0 beer_server.wsgi
     # 将django后端收集到的静态文件持久化到本地，供nginx部署时使用
     volumes:
       - ./beer-web/dist/static/admin:/root/beer_server/static/admin
