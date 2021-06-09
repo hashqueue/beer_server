@@ -23,7 +23,7 @@ echo "rabbitmq服务已启动完毕。即将开始部署Django项目。"
 nohup celery -A beer_server worker -l INFO >> celery.log 2>&1 &
 echo "启动Celery异步任务队列服务完毕。"
 
-python3 manage.py collectstatic \
+python3 manage.py collectstatic --noinput \
   && echo "收集静态文件完毕。" \
   && python3 manage.py makemigrations \
   && python3 manage.py migrate \
