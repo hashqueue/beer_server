@@ -21,7 +21,7 @@ done
 
 echo "rabbitmq服务已启动完毕。即将开始部署Django项目。"
 
-python3 manage.py collectstatic --noinput \
+python3 manage.py collectstatic \
   && echo "收集静态文件完毕。" \
   && python3 manage.py makemigrations \
   && python3 manage.py migrate \
