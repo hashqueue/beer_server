@@ -20,6 +20,8 @@ while ! nc -z rabbitmq 5672 ; do
 done
 
 echo "rabbitmq服务已启动完毕。即将开始部署Django项目。"
+nohup celery -A beer_server worker -l INFO >> celery.log 2>&1 &
+echo "启动Celery异步任务队列服务完毕。"
 
 python3 manage.py collectstatic \
   && echo "收集静态文件完毕。" \
@@ -28,9 +30,5 @@ python3 manage.py collectstatic \
   && echo "项目数据迁移完毕。" \
   && python3 manage.py init_admin \
   && python3 manage.py update_global_function_content \
-  && echo "初始化项目数据完毕。"
-# 后台运行celery
-nohup celery -A beer_server worker -l INFO >> celery.log 2>&1 &
-
-echo "启动Celery异步任务队列服务完毕。" \
+  && echo "初始化项目数据完毕。" \
   && gunicorn --workers=$((cpu_core_nums * 2 + 1)) --bind=0.0.0.0 beer_server.wsgi
