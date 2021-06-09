@@ -19,7 +19,7 @@ services:
       - "5672:5672"
       - "15672:15672"
     # always表容器运行发生错误时一直重启
-    restart: always
+    #    restart: always
     tty: true
     stdin_open: true
 
@@ -38,7 +38,7 @@ services:
       - $PWD/mysql/data:/var/lib/mysql
     ports:
       - "3306:3306"
-    restart: always
+    #    restart: always
     tty: true
     stdin_open: true
 
@@ -50,7 +50,6 @@ services:
     # 将django后端收集到的静态文件持久化到本地，供nginx部署时使用
     volumes:
       - $PWD/beer-web/dist/static:/root/beer_server/static
-      - $PWD/beer_server/config.ini:/root/beer_server/beer_server/config.ini
     networks:
       - beer_net
     depends_on:
@@ -58,7 +57,7 @@ services:
       - rabbitmq
     ports:
       - "8000:8000"
-    restart: always
+    #    restart: always
     tty: true
     stdin_open: true
 
@@ -75,6 +74,6 @@ services:
       - beer_net
     depends_on:
       - beer
-    restart: always
+    #    restart: always
     tty: true
     stdin_open: true
