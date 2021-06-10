@@ -53,7 +53,6 @@ services:
       - ./compose/frontend/static/grappelli:/root/beer_server/static/grappelli
       - ./compose/frontend/static/rest_framework:/root/beer_server/static/rest_framework
       - ./compose/frontend/static/media:/root/beer_server/static/media
-      - ./compose/server:/root/beer_server
     networks:
       - beer_net
     depends_on:
