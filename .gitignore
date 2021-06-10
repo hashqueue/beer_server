@@ -118,6 +118,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+!/compose/frontend/.env
 
 # Spyder project settings
 .spyderproject
