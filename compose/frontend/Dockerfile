@@ -14,14 +14,13 @@ RUN mkdir /app \
     && echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian-security buster/updates main contrib non-free" >> /etc/apt/sources.list \
     && apt update \
     && apt install -y netcat \
-COPY --from=0 /app/dist /app
-WORKDIR /app
-COPY nginx.conf /etc/nginx/nginx.conf
-COPY deploy_nginx.sh /app
-RUN rm /etc/nginx/conf.d/default.conf \
     && mkdir -p /app/static/media \
     && mkdir -p /app/static/admin \
     && mkdir -p /app/static/grappelli \
     && mkdir -p /app/static/rest_framework
+COPY --from=0 /app/dist /app
+WORKDIR /app
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY deploy_nginx.sh /app
 
 CMD /bin/bash deploy_nginx.sh && nginx -g daemon off
