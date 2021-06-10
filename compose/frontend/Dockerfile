@@ -6,8 +6,16 @@ RUN yarn config set registry https://registry.npm.taobao.org/ \
     && yarn run build
 
 FROM nginx
-RUN mkdir /app
+RUN mkdir /app \
+    && mv /etc/apt/sources.list /etc/apt/sources.list.bak \
+    && echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian/ buster main contrib non-free" > /etc/apt/sources.list \
+    && echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-updates main contrib non-free" >> /etc/apt/sources.list \
+    && echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-backports main contrib non-free" >> /etc/apt/sources.list \
+    && echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian-security buster/updates main contrib non-free" >> /etc/apt/sources.list \
+    && apt update \
+    && apt install -y netcat \
 COPY --from=0 /app/dist /app
+WORKDIR /app
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY deploy_nginx.sh /app
 RUN rm /etc/nginx/conf.d/default.conf \
