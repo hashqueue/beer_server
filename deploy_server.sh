@@ -1,5 +1,5 @@
 #!/bin/bash
-# 获取当前容器CPU核数
+# 获取CPU核数
 cpu_core_nums=$(cat /proc/cpuinfo | grep "cores" | uniq | awk '{print $4}')
 
 export PYTHONUNBUFFERED=1
@@ -21,8 +21,7 @@ echo "rabbitmq服务已启动完毕。"
 nohup celery -A beer_server worker -l INFO >> celery.log 2>&1 &
 echo "启动Celery异步任务队列服务完毕。即将开始部署Django项目。"
 
-source venv/bin/activate \
-    && python3 manage.py makemigrations \
+python3 manage.py makemigrations \
     && python3 manage.py migrate \
     && echo "项目数据迁移完毕。" \
     && python3 manage.py init_admin \
