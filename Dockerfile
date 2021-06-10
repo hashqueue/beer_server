@@ -10,6 +10,6 @@ RUN mv /etc/apt/sources.list /etc/apt/sources.list.bak \
     && apt update \
     && apt install -y netcat \
     && pip3 install -i https://pypi.douban.com/simple -U pip \
-    && pip3 install -i https://pypi.douban.com/simple -r requirements.txt
+    && pip3 install -i https://pypi.douban.com/simple -r requirements.txt \
     && chmod +x ./deploy_server.sh
 CMD ./deploy_server.sh
