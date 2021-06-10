@@ -23,4 +23,4 @@ WORKDIR /app
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY deploy_nginx.sh /app
 
-CMD /bin/bash deploy_nginx.sh && nginx -g daemon off
+CMD /bin/bash deploy_nginx.sh && nginx -g "daemon off;"
