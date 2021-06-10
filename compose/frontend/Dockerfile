@@ -1,7 +1,9 @@
 FROM node:12.22.1
 COPY ./ /app
 WORKDIR /app
-RUN npm install && npm run build
+RUN yarn config set registry https://registry.npm.taobao.org/ \
+    && yarn install \
+    && yarn run build
 
 FROM nginx
 RUN mkdir /app
