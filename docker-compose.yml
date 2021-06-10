@@ -63,7 +63,7 @@ services:
       - rabbitmq
     ports:
       - "8000:8000"
-    #    restart: always
+        restart: always
     tty: true
     stdin_open: true
 
