@@ -49,13 +49,13 @@ services:
     hostname: beer
     # 将django后端收集到的静态文件持久化到本地，供nginx部署时使用
     volumes:
-      - ./beer-web/dist/static/admin:/root/server/static/admin
-      - ./beer-web/dist/static/grappelli:/root/server/static/grappelli
-      - ./beer-web/dist/static/rest_framework:/root/server/static/rest_framework
-      - ./beer-web/dist/static/media:/root/server/static/media
-      - ./compose/server/logs:/root/server/logs
-      - ./compose/server/global_funcs:/root/server/global_funcs
-      - ./compose/server/settings:/root/server/beer_server
+      - ./beer-web/dist/static/admin:/root/beer_server/static/admin
+      - ./beer-web/dist/static/grappelli:/root/beer_server/static/grappelli
+      - ./beer-web/dist/static/rest_framework:/root/beer_server/static/rest_framework
+      - ./beer-web/dist/static/media:/root/beer_server/static/media
+      - ./compose/server/logs:/root/beer_server/logs
+      - ./compose/server/global_funcs:/root/beer_server/global_funcs
+      - ./compose/server/settings:/root/beer_server/beer_server
     networks:
       - beer_net
     depends_on:

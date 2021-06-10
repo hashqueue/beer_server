@@ -1,7 +1,7 @@
 FROM python:3.8
-WORKDIR /root/server
-ENV LANG=C.UTF-8
-COPY . .
+WORKDIR /root/beer_server
+ENV LANG=C.UTF-8 PYTHONUNBUFFERED=1
+COPY . /root/beer_server
 RUN mv /etc/apt/sources.list /etc/apt/sources.list.bak \
     && echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian/ buster main contrib non-free" > /etc/apt/sources.list \
     && echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-updates main contrib non-free" >> /etc/apt/sources.list \
@@ -12,4 +12,4 @@ RUN mv /etc/apt/sources.list /etc/apt/sources.list.bak \
     && pip3 install -i https://pypi.douban.com/simple -U pip \
     && pip3 install -i https://pypi.douban.com/simple -r requirements.txt \
     && chmod +x ./deploy_server.sh
-CMD ["./deploy_server.sh"]
+CMD /bin/bash deploy_server.sh
