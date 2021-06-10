@@ -1,6 +1,6 @@
 FROM python:3.8
-WORKDIR /root/beer_server
-ENV PYTHONUNBUFFERED=1 DJANGO_SETTINGS_MODULE=beer_server.settings
+WORKDIR /root/server
+ENV LANG=C.UTF-8
 COPY . .
 RUN mv /etc/apt/sources.list /etc/apt/sources.list.bak \
     && echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian/ buster main contrib non-free" > /etc/apt/sources.list \
@@ -11,7 +11,5 @@ RUN mv /etc/apt/sources.list /etc/apt/sources.list.bak \
     && apt install -y netcat \
     && pip3 install -i https://pypi.douban.com/simple -U pip \
     && pip3 install -i https://pypi.douban.com/simple -r requirements.txt \
-    && python3 manage.py collectstatic --noinput \
-    && echo "收集静态文件完毕。" \
     && chmod +x ./deploy_server.sh
 CMD ["./deploy_server.sh"]
