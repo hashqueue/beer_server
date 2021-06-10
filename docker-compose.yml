@@ -6,6 +6,26 @@ networks:
     driver: bridge
 
 services:
+  nginx:
+    build: compose/frontend
+    hostname: nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./compose/frontend/static/admin:/app/static/admin
+      - ./compose/frontend/static/grappelli:/app/static/grappelli
+      - ./compose/frontend/static/rest_framework:/app/static/rest_framework
+      - ./compose/frontend/static/media:/app/static/media
+      - ./compose/frontend/nginx.conf:/etc/nginx/nginx.conf
+      - ./compose/frontend/nginx_log:/var/log/nginx
+    networks:
+      - beer_net
+    #    restart: always
+    tty: true
+    stdin_open: true
+
   rabbitmq:
     image: rabbitmq:management
     hostname: rabbitmq
@@ -49,14 +69,11 @@ services:
     hostname: beer
     # 将django后端收集到的静态文件持久化到本地，供nginx部署时使用
     volumes:
-      - ./beer-web/dist/static/admin:/root/beer_server/static/admin
-      - ./beer-web/dist/static/grappelli:/root/beer_server/static/grappelli
-      - ./beer-web/dist/static/rest_framework:/root/beer_server/static/rest_framework
-      - ./beer-web/dist/static/media:/root/beer_server/static/media
-      - ./compose/server/logs:/root/beer_server/logs
-      - ./compose/server/celery-logs:/root/beer_server/celery.log
-      - ./compose/server/global_funcs:/root/beer_server/global_funcs
-      #      - ./compose/server/settings:/root/beer_server/beer_server
+      - ./compose/frontend/static/admin:/root/beer_server/static/admin
+      - ./compose/frontend/static/grappelli:/root/beer_server/static/grappelli
+      - ./compose/frontend/static/rest_framework:/root/beer_server/static/rest_framework
+      - ./compose/frontend/static/media:/root/beer_server/static/media
+      - ./compose/server:/root/beer_server
     networks:
       - beer_net
     depends_on:
@@ -65,24 +82,5 @@ services:
     ports:
       - "8000:8000"
     # restart: always
-    tty: true
-    stdin_open: true
-
-  nginx:
-    build: ./compose/nginx
-    hostname: nginx
-    container_name: nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./beer-web/dist:/usr/share/nginx/html
-      - ./compose/nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf
-      - ./compose/nginx/log:/var/log/nginx
-    networks:
-      - beer_net
-    depends_on:
-      - beer
-    #    restart: always
     tty: true
     stdin_open: true
