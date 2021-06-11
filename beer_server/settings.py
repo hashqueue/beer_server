@@ -33,7 +33,7 @@ SECRET_KEY = config.get_string_value('secret_key', 'SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config.get_boolean_value('deploy', 'DEBUG')
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = config.get_string_value('cors', 'ALLOWED_HOSTS').split(' # ')
 
 # 当 DEBUG=False 和 AdminEmailHandler 中设置了 LOGGING 时 给ADMINS收件人列表发送邮件
 ADMINS = [tuple(item.split(',')) for item in config.get_string_value('email', 'ADMINS').split(' # ')]
@@ -54,6 +54,9 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Application definition
+
+# 授权进行跨站点HTTP请求的来源列表,默认为空列表
+CORS_ALLOWED_ORIGINS = config.get_string_value('cors', 'CORS_ALLOWED_ORIGINS').split(' # ')
 
 # 设置自定义的用户模型类：被Django的认证系统所识别
 AUTH_USER_MODEL = 'user.User'
@@ -130,11 +133,6 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': True,
 }
-
-# 授权进行跨站点HTTP请求的来源列表,默认为空列表
-CORS_ALLOWED_ORIGINS = ["*"]
-# 如果为True,则将允许将cookie包含在跨站点HTTP请求中.默认为False.
-CORS_ALLOW_CREDENTIALS = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
