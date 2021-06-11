@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
+    'corsheaders',
     'django_filters',
     'drf_spectacular',
     'django_celery_results',
@@ -80,7 +81,6 @@ INSTALLED_APPS = [
     'task',
     'functions'
 ]
-
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'Beer API',
@@ -131,31 +131,21 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
 }
 
+# 授权进行跨站点HTTP请求的来源列表,默认为空列表
+CORS_ALLOWED_ORIGINS = ["*"]
+# 如果为True,则将允许将cookie包含在跨站点HTTP请求中.默认为False.
+CORS_ALLOW_CREDENTIALS = True
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
-CORS_ALLOWED_ORIGINS = None
-CORS_ALLOW_CREDENTIALS = None
-
-if DEBUG is False:
-    # 只在测试环境设置后端跨域
-    INSTALLED_APPS.append('corsheaders')
-    # 授权进行跨站点HTTP请求的来源列表,默认为空列表
-    CORS_ALLOWED_ORIGINS = [
-        "http://localhost:8080",
-    ]
-    # 如果为True,则将允许将cookie包含在跨站点HTTP请求中.默认为False.
-    CORS_ALLOW_CREDENTIALS = True
-    # 配置允许跨域请求
-    MIDDLEWARE.insert(2, 'corsheaders.middleware.CorsMiddleware')
-
 
 ROOT_URLCONF = 'beer_server.urls'
 
