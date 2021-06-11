@@ -71,7 +71,7 @@ services:
       - "443:443"
     volumes:
       - ./compose/frontend/server_static:/app/static
-      - ./compose/frontend/server_static_media:/app/static/media
+      - ./compose/frontend/server_static_media:/app/media
       - ./compose/frontend/nginx.conf:/etc/nginx/nginx.conf
       - ./compose/frontend/nginx_log:/var/log/nginx
     networks:
