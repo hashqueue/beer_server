@@ -14,7 +14,7 @@ RUN mkdir /app \
     && echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian-security buster/updates main contrib non-free" >> /etc/apt/sources.list \
     && apt update \
     && apt install -y netcat \
-    && mkdir -p /app/media \
+    && mkdir -p /app/media/images/default \
     && mkdir -p /app/static/admin \
     && mkdir -p /app/static/grappelli \
     && mkdir -p /app/static/rest_framework
@@ -23,4 +23,4 @@ WORKDIR /app
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY deploy_nginx.sh /app
 
-CMD /bin/bash deploy_nginx.sh && nginx -g "daemon off;"
+ENTRYPOINT /bin/bash deploy_nginx.sh && nginx -g "daemon off;"

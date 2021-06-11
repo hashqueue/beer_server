@@ -33,7 +33,7 @@ SECRET_KEY = config.get_string_value('secret_key', 'SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config.get_boolean_value('deploy', 'DEBUG')
 
-ALLOWED_HOSTS = config.get_string_value('cors', 'ALLOWED_HOSTS').split(' # ')
+ALLOWED_HOSTS = ["*"]
 
 # 当 DEBUG=False 和 AdminEmailHandler 中设置了 LOGGING 时 给ADMINS收件人列表发送邮件
 ADMINS = [tuple(item.split(',')) for item in config.get_string_value('email', 'ADMINS').split(' # ')]
@@ -55,8 +55,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Application definition
 
-# 授权进行跨站点HTTP请求的来源列表,默认为空列表
-CORS_ALLOWED_ORIGINS = config.get_string_value('cors', 'CORS_ALLOWED_ORIGINS').split(' # ')
+# 授权进行跨站点HTTP请求的来源列表, 允许所有来源。
+CORS_ALLOW_ALL_ORIGINS = True
 
 # 设置自定义的用户模型类：被Django的认证系统所识别
 AUTH_USER_MODEL = 'user.User'
@@ -278,7 +278,7 @@ LOGGING = {
             # 滚动生成日志，切割
             'class': 'logging.handlers.RotatingFileHandler',
             # 存放日志文件的位置
-            'filename': os.path.join(BASE_DIR, 'logs', 'app.log'),
+            'filename': os.path.join(BASE_DIR, 'logs', 'django-application.log'),
             'maxBytes': 100 * 1024 * 1024,
             'backupCount': 10,
             'formatter': 'verbose',
