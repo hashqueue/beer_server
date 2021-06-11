@@ -2,10 +2,7 @@ FROM python:3.8
 WORKDIR /root/beer_server
 ENV LANG=C.UTF-8
 COPY . .
-RUN ls -lath static/media/default \
-    && mv static/ static_media \
-    && ls -lath static_media/media/default \
-    && mv /etc/apt/sources.list /etc/apt/sources.list.bak \
+RUN mv /etc/apt/sources.list /etc/apt/sources.list.bak \
     && echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian/ buster main contrib non-free" > /etc/apt/sources.list \
     && echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-updates main contrib non-free" >> /etc/apt/sources.list \
     && echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-backports main contrib non-free" >> /etc/apt/sources.list \
