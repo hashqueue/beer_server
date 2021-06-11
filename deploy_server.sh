@@ -26,4 +26,4 @@ python3 manage.py collectstatic --noinput \
     && python3 manage.py init_admin \
     && python3 manage.py update_global_function_content \
     && echo "初始化系统管理员数据和全局函数文件完毕。" \
-    && gunicorn --workers=$((cpu_core_nums * 2 + 1)) --bind=0.0.0.0 beer_server.wsgi
+    && gunicorn --workers=$((cpu_core_nums * 2 + 1)) --bind=0.0.0.0 beer_server.wsgi >> gunicorn.log
