@@ -79,6 +79,6 @@ services:
       - beer_net
     #    restart: always
     depends_on:
-      - beer
+      - backend
     tty: true
     stdin_open: true
