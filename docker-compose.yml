@@ -28,7 +28,7 @@ services:
     container_name: mysql
     command: --default-authentication-plugin=mysql_native_password
     environment:
-      MYSQL_ROOT_PASSWORD: admin.191215.*
+      MYSQL_ROOT_PASSWORD: mysql.196652.*
       MYSQL_DATABASE: beer
     networks:
       - beer_net
@@ -50,6 +50,7 @@ services:
     volumes:
       - ./compose/frontend/server_static:/root/beer_server/static
       - ./compose/frontend/server_media:/root/beer_server/media
+      - ./compose/server/celery.log:/root/beer_server/celery.log
       - ./compose/server/logs:/root/beer_server/logs
       - ./compose/server/config.ini:/root/beer_server/compose/server/config.ini
     networks:
@@ -74,7 +75,7 @@ services:
       - ./compose/frontend/server_static:/app/static
       - ./compose/frontend/server_media:/app/media
       - ./compose/frontend/nginx.conf:/etc/nginx/nginx.conf
-      - ./compose/frontend/nginx_log:/var/log/nginx
+      - ./compose/frontend/nginx_logs:/var/log/nginx
     networks:
       - beer_net
     #    restart: always

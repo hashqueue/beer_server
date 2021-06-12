@@ -22,9 +22,9 @@ class Command(BaseCommand):
                 username = superuser[0]
                 email = superuser[1]
                 password = 'admin.191215.*'
-                self.stdout.write(f'正在创建管理员账户 <{username}> <{email}>')
+                self.stdout.write(f'Creating administrator account <{username}> <{email}>  🌿 🌿 🌿')
                 admin = User.objects.create_superuser(email=email, username=username, password=password)
                 admin.save()
-            self.stdout.write(f'批量初始化管理员账户数据完成!')
+            self.stdout.write(f'Initializing the administrator account is complete. ✅')
         else:
-            self.stdout.write('没有可用的管理员账户数据以供初始化!')
+            self.stdout.write('There is no admin account data available for initialization.  🌿 🌿 🌿')

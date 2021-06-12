@@ -55,11 +55,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Application definition
 
-# 授权进行跨站点HTTP请求的来源列表, 允许所有来源
-CORS_ALLOW_ALL_ORIGINS = True
-# 允许在跨站点HTTP请求中包含cookie
-CORS_ALLOW_CREDENTIALS = True
-
 # 设置自定义的用户模型类：被Django的认证系统所识别
 AUTH_USER_MODEL = 'user.User'
 
@@ -73,7 +68,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
-    'corsheaders',
     'django_filters',
     'drf_spectacular',
     'django_celery_results',
@@ -139,13 +133,23 @@ SIMPLE_JWT = {
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# 后端配置CORS
+CORS_ALLOW_ALL_ORIGINS = None
+CORS_ALLOW_CREDENTIALS = None
+if DEBUG is True:
+    # 授权进行跨站点HTTP请求的来源列表, 允许所有来源
+    CORS_ALLOW_ALL_ORIGINS = True
+    # 允许在跨站点HTTP请求中包含cookie
+    CORS_ALLOW_CREDENTIALS = True
+    MIDDLEWARE.insert(2, 'corsheaders.middleware.CorsMiddleware')
+    INSTALLED_APPS.append('corsheaders')
 
 ROOT_URLCONF = 'beer_server.urls'
 

@@ -23,4 +23,4 @@ WORKDIR /app
 COPY deploy_nginx.sh .
 RUN chmod +x deploy_nginx.sh
 
-ENTRYPOINT /bin/bash deploy_nginx.sh && echo "The Nginx service is deployed." && nginx -g "daemon off;"
+ENTRYPOINT /bin/bash deploy_nginx.sh && echo "The Nginx service is deployed. ✅" && nginx -g "daemon off;"

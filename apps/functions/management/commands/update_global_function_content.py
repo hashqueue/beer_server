@@ -27,6 +27,6 @@ class Command(BaseCommand):
                           mode='w',
                           encoding='utf-8') as f:
                     f.write(obj.function_body)
-            self.stdout.write('全局函数文件已经全部更新完毕!')
+            self.stdout.write('The global function files have all been updated. ✅')
         else:
-            self.stdout.write('暂无需要进行更新的全局函数文件!')
+            self.stdout.write('There is no global function file that needs to be updated.  🌿 🌿 🌿')
