@@ -143,7 +143,7 @@ MIDDLEWARE = [
 # 后端配置CORS
 CORS_ALLOW_ALL_ORIGINS = None
 CORS_ALLOW_CREDENTIALS = None
-if DEBUG is True:
+if DEBUG:
     # 授权进行跨站点HTTP请求的来源列表, 允许所有来源
     CORS_ALLOW_ALL_ORIGINS = True
     # 允许在跨站点HTTP请求中包含cookie

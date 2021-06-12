@@ -1,4 +1,9 @@
 version: "3.8"
+
+volumes: # 自定义数据卷
+  static_vol: #定义数据卷同步存放web项目static文件夹的数据
+  media_vol: #定义数据卷同步存放web项目用户上传到media文件夹的数据
+
 # 自定义网络(默认桥接), 不使用links通信
 networks:
   beer_net:
@@ -18,7 +23,7 @@ services:
       - "5672:5672"
       - "15672:15672"
     # always表容器运行发生错误时一直重启
-    #    restart: always
+    restart: always
     tty: true
     stdin_open: true
 
@@ -37,7 +42,7 @@ services:
       - ./compose/mysql/data:/var/lib/mysql
     ports:
       - "3306:3306"
-    #    restart: always
+    restart: always
     tty: true
     stdin_open: true
 
@@ -48,8 +53,8 @@ services:
     hostname: backend
     # 将django后端收集到的静态文件持久化到本地，供nginx部署时使用
     volumes:
-      - ./compose/frontend/server_static:/root/beer_server/static
-      - ./compose/frontend/server_media:/root/beer_server/media
+      - static_vol:/root/beer_server/static
+      - media_vol:/root/beer_server/media
       - ./compose/server/celery.log:/root/beer_server/celery.log
       - ./compose/server/logs:/root/beer_server/logs
       - ./compose/server/config.ini:/root/beer_server/compose/server/config.ini
@@ -60,7 +65,7 @@ services:
       - rabbitmq
     ports:
       - "8000:8000"
-    # restart: always
+    restart: always
     tty: true
     stdin_open: true
 
@@ -72,13 +77,13 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./compose/frontend/server_static:/app/static
-      - ./compose/frontend/server_media:/app/media
+      - static_vol:/app/static
+      - media_vol:/app/media
       - ./compose/frontend/nginx.conf:/etc/nginx/nginx.conf
       - ./compose/frontend/nginx_logs:/var/log/nginx
     networks:
       - beer_net
-    #    restart: always
+    restart: always
     depends_on:
       - backend
     tty: true
