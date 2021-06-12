@@ -9,7 +9,7 @@ FROM nginx
 RUN mkdir -p /app/media \
     && mkdir -p /app/static/admin \
     && mkdir -p /app/static/grappelli \
-    && mkdir -p /app/static/rest_framework
+    && mkdir -p /app/static/rest_framework \
     && mv /etc/apt/sources.list /etc/apt/sources.list.bak \
     && echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian/ buster main contrib non-free" > /etc/apt/sources.list \
     && echo "deb https://mirrors.tuna.tsinghua.edu.cn/debian/ buster-updates main contrib non-free" >> /etc/apt/sources.list \
