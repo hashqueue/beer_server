@@ -19,7 +19,7 @@ from utils.django_utils.handle_config import HandleConfig
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-config = HandleConfig(file_name=os.path.join(BASE_DIR, 'beer_server/config.ini'))
+config = HandleConfig(file_name=os.path.join(BASE_DIR, 'compose/server/config.ini'))
 
 # 添加apps目录到python的里去
 sys.path.insert(0, os.path.join(BASE_DIR, 'apps/'))
@@ -55,8 +55,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Application definition
 
-# 授权进行跨站点HTTP请求的来源列表, 允许所有来源。
+# 授权进行跨站点HTTP请求的来源列表, 允许所有来源
 CORS_ALLOW_ALL_ORIGINS = True
+# 允许在跨站点HTTP请求中包含cookie
+CORS_ALLOW_CREDENTIALS = True
 
 # 设置自定义的用户模型类：被Django的认证系统所识别
 AUTH_USER_MODEL = 'user.User'
@@ -225,7 +227,7 @@ CELERY_BROKER_URL = 'amqp://guest:guest@rabbitmq:5672'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 # 配置图片文件上传的存储路径
-MEDIA_ROOT = os.path.join(BASE_DIR, 'static', 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 # 创建log文件的文件夹

@@ -1,4 +1,4 @@
-const IS_PROD = ['production', 'prod'].includes(process.env.NODE_ENV)
+const IS_PROD = process.env.NODE_ENV === 'production'
 
 const plugins = []
 if (IS_PROD) {

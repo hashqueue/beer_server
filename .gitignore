@@ -1,5 +1,5 @@
 # Created by .ignore support plugin (hsz.mobi)
-beer_server/config.ini
+compose/server/config.ini
 ### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -63,6 +63,7 @@ cover/
 
 # Django stuff:
 *.log
+!/compose/server/celery.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal

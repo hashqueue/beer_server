@@ -1,9 +1,9 @@
 #!/bin/bash
 
-while ! nc -z beer 8000 ; do
-    echo "正在等待Django后端服务启动..."
+while ! nc -z backend 8000 ; do
+    echo "Waiting for the Django backend service to be deployed.............................."
     sleep 3
 done
 
-echo "Django后端服务已启动完毕。"
+echo "The Django backend service is deployed. The Nginx service will be deployed soon.........................."
 
