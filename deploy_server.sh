@@ -20,6 +20,7 @@ echo "Celery asynchronous task queue service is deployed. ✅ The Django backend
 
 python3 manage.py collectstatic --noinput \
     && echo "The collection of static files is complete. ✅" \
+    && echo "media" > media/images/default/README \
     && python3 manage.py makemigrations \
     && python3 manage.py migrate \
     && echo "The data migration is complete. ✅" \
