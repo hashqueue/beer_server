@@ -87,7 +87,7 @@ SPECTACULAR_SETTINGS = {
     'VERSION': '1.0.0',
     'CONTACT': {"email": "1912315910@qq.com"},
     'LICENSE': {"name": "MIT License"},
-    'SERVERS': [{"url": "http://127.0.0.1:8000"}],
+    'SERVERS': [{"url": "http://127.0.0.1:8000"}, {"url": "http://beer.wenbin.org.cn"}],
 }
 
 REST_FRAMEWORK = {
