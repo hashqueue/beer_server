@@ -14,7 +14,7 @@ from beer_server.settings import ADMINS
 
 class Command(BaseCommand):
     # 帮助文本
-    help = '批量初始化管理员账户, 管理员账户列表可在settings.py文件同级目录下的config.ini文件中的ADMINS进行配置'
+    help = '批量初始化管理员账户, 管理员账户列表可在compose/server目录下的config.ini文件中的ADMINS进行配置'
 
     def handle(self, *args, **options):
         if User.objects.count() == 0:

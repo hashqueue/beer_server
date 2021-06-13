@@ -18,7 +18,8 @@ class MyTokenObtainPairView(TokenObtainPairView):
             200: {
                 "type": "object",
                 "properties": {
-                    "code": {"type": "integer"}, "message": {"type": "string"},
+                    "code": {"type": "integer"},
+                    "message": {"type": "string"},
                     "data": {"type": "object",
                              "properties": {
                                  "refresh": {"type": "string"},

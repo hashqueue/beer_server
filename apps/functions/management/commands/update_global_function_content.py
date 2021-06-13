@@ -14,7 +14,7 @@ from beer_server.settings import BASE_DIR
 
 class Command(BaseCommand):
     # 帮助文本
-    help = '更新根目录下global_funcs目录下所有的全局函数文件的内容'
+    help = '同步数据库中的全局函数到global_funcs目录下, 生成对应的全局函数文件'
 
     # 核心业务逻辑
     def handle(self, *args, **options):
