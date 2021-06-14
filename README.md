@@ -7,7 +7,7 @@
    * Ant Design of Vue(UI组件库)
    * g2plot(图表绘制)
    * axios(易用、简洁且高效的http库)
-   * monaco-editor(实现在线编辑器功能，在线编辑Python代码)
+   * monaco-editor(实现在线编辑器功能，在线编辑Python代码和JSON渲染)
 ### 后端
    * Django(Python Web 框架)
    * djangorestframework(基于Django构建restful风格的API)
