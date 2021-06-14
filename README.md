@@ -22,6 +22,7 @@
    * Mysql(项目的数据持久化存储)
    * RabbitMQ(用于辅助Celery异步任务队列功能的消息队列)
    * requests(发起HTTP请求)
+   * Nginx(Web和反向代理服务器)
 #### 特别鸣谢以上开源项目，让我得以站在巨人的肩膀上快速构建自己的项目。
 ## 部署(生产环境)
 1. 安装docker和docker-compose和git
