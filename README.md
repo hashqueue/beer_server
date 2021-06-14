@@ -81,13 +81,18 @@
         USER = root
         PASSWORD = mysql.196652.*
         ```
-4. 然后回到项目根目录，使用docker-compose命令一键部署项目
+4. 进入`compose/frontend`目录
+    * 修改`.env.production`文件中的`VUE_APP_PRO_API_BASE_URL`为自己的`服务器域名或IP`
+        ```bash
+        VUE_APP_PRO_API_BASE_URL=http://服务器域名或者IP/api 
+        ```
+5. 然后回到项目根目录，使用docker-compose命令一键部署项目
     ```bash
     cd ../../
     # 一键部署(docker会自动创建镜像并运行容器, 前端代码也是在镜像构建阶段进行编译的)
     docker-compose up -d
     ```
-5. 等待docker-compose创建镜像完毕后，会自动运行容器。
+6. 等待docker-compose创建镜像完毕后，会自动运行容器。
     ```bash
     # 查看容器是否均启动完毕
     w@server:~/beer_server# docker-compose ps
@@ -98,7 +103,7 @@
     nginx      /bin/sh -c /bin/bash deplo ...   Up      0.0.0.0:443->443/tcp,:::443->443/tcp, 0.0.0.0:80->80/tcp,:::80->80/tcp                                                                
     rabbitmq   docker-entrypoint.sh rabbi ...   Up      15671/tcp, 0.0.0.0:15672->15672/tcp,:::15672->15672/tcp, 15691/tcp, 15692/tcp, 25672/tcp, 4369/tcp, 5671/tcp, 0.0.0.0:5672->5672/tcp,:::5672->5672/tcp 
     ```
-6. 此时项目已经部署完毕
+7. 此时项目已经部署完毕
     * `前端页面`和`admin管理后台页面`登录时默认的`账户名`是`config.ini`配置文件中的`ADMINS`配置的`管理员账户`。`账户名`使用`邮箱地址`或`用户名`均可以。`密码`默认`admin.191215.*`
     * 浏览器访问`http://你的服务器域名或IP/`(默认80端口)即可查看项目前端页面
     * 浏览器访问`http://你的服务器域名或IP/admin/`(默认80端口)即可查看项目admin管理后台页面
