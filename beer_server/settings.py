@@ -222,8 +222,9 @@ CELERY_TIMEZONE = TIME_ZONE
 CELERY_ENABLE_UTC = False
 # 异步任务运行结果使用django自带的ORM来存储
 CELERY_RESULT_BACKEND = 'django-db'
-# 消息代理URL
-CELERY_BROKER_URL = 'amqp://guest:guest@rabbitmq:5672'
+if not DEBUG:
+    # 消息代理URL,rabbitmq是docker-compose.yml中配置的rabbitmq的hostname
+    CELERY_BROKER_URL = 'amqp://guest:guest@rabbitmq:5672'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/

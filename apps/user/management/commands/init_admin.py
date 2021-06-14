@@ -9,7 +9,7 @@ import os
 
 from django.core.management.base import BaseCommand
 from user.models import User
-from beer_server.settings import ADMINS
+from beer_server.settings import ADMINS, config
 
 
 class Command(BaseCommand):
@@ -21,7 +21,7 @@ class Command(BaseCommand):
             for superuser in ADMINS:
                 username = superuser[0]
                 email = superuser[1]
-                password = 'admin.191215.*'
+                password = config.get_string_value('email', 'ADMINS_PASSWORD')
                 self.stdout.write(f'Creating administrator account <{username}> <{email}>  🌿 🌿 🌿')
                 admin = User.objects.create_superuser(email=email, username=username, password=password)
                 admin.save()
