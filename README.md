@@ -1,4 +1,28 @@
 # Beer接口自动化测试平台(单机版项目)
+## 使用到的技术栈
+### 前端
+   * Vue.js(js框架)
+   * Vuex(数据集中式存储)
+   * vue-router(前端路由管理)
+   * Ant Design of Vue(UI组件库)
+   * g2plot(图表绘制)
+   * axios(易用、简洁且高效的http库)
+   * monaco-editor(实现在线编辑器功能，在线编辑Python代码)
+### 后端
+   * Django(Python Web 框架)
+   * djangorestframework(基于Django构建restful风格的API)
+   * djangorestframework-simplejwt(使用JWT进行用户认证)
+   * drf-spectacular(在线swagger和redoc形式的API文档)
+   * celery(实现异步任务队列功能)
+   * django-celery-results(异步任务结果存储)
+   * django-cors-headers(后端配置CORS解决跨域问题)
+   * django-grappelli(Django自带admin后台的美化)
+   * gunicorn(用于生产环境部署Django项目的Python WSGI HTTP Server)
+   * jmespath(用于JSON查询的语言，实现接口自动化测试中的响应体结果的提取)
+   * Mysql(项目的数据持久化存储)
+   * RabbitMQ(用于辅助Celery异步任务队列功能的消息队列)
+   * requests(发起HTTP请求)
+#### 特别鸣谢以上开源项目，让我得以站在巨人的肩膀上快速构建自己的项目。
 ## 部署(生产环境)
 1. 安装docker和docker-compose和git
     * [docker安装步骤(官方文档)](https://docs.docker.com/engine/install/)
