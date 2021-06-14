@@ -1,5 +1,8 @@
 # Created by .ignore support plugin (hsz.mobi)
 compose/server/config.ini
+# Vuepress
+node_modules
+
 ### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/

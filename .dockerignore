@@ -5,3 +5,6 @@
 .gitignore
 LICENSE
 README.md
+docs
+package.json
+yarn.lock
