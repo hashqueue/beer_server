@@ -74,6 +74,7 @@
         ;USER = root
         ;PASSWORD = 123123
         # 生产环境数据库配置 production
+        # 如果在此处修改了数据库密码，则需要去项目根目录下的docker-compose.yml中同步修改数据库密码(MYSQL_ROOT_PASSWORD字段的值要与此处的密码一致，默认是mysql.196652.*)
         ENGINE = django.db.backends.mysql
         HOST = mysql
         PORT = 3306
