@@ -1,28 +1,30 @@
 # Beer接口自动化测试平台(单机版项目)
 ## 使用到的技术栈
 ### 前端
-   * Vue.js(js框架)
-   * Vuex(数据集中式存储)
-   * vue-router(前端路由管理)
-   * Ant Design of Vue(UI组件库)
-   * g2plot(图表绘制)
-   * axios(易用、简洁且高效的http库)
-   * monaco-editor(实现在线编辑器功能，在线编辑Python代码和JSON渲染)
+   * [Vue.js](https://cn.vuejs.org/v2/guide/) JavaScript框架
+   * [Vuex](https://vuex.vuejs.org/zh/guide/) 数据集中式存储；跨组件通信
+   * [Vue Router](https://router.vuejs.org/zh/) Vue.js 官方的路由管理器。 
+   * [Ant Design of Vue](https://antdv.com/docs/vue/introduce-cn/) UI组件库
+   * [G2Plot](https://g2plot.antv.vision/zh) 开箱即用的图表库
+   * [axios](https://github.com/axios/axios) 易用、简洁且高效的基于Promise的http库
+   * [Monaco Editor](https://microsoft.github.io/monaco-editor/) 实现在线编辑器功能，在线编辑Python代码以及渲染JSON
 ### 后端
-   * Django(Python Web 框架)
-   * djangorestframework(基于Django构建restful风格的API)
-   * djangorestframework-simplejwt(使用JWT进行用户认证)
-   * drf-spectacular(在线swagger和redoc形式的API文档)
-   * celery(实现异步任务队列功能)
-   * django-celery-results(异步任务结果存储)
-   * django-cors-headers(后端配置CORS解决跨域问题)
-   * django-grappelli(Django自带admin后台的美化)
-   * gunicorn(用于生产环境部署Django项目的Python WSGI HTTP Server)
-   * jmespath(用于JSON查询的语言，实现接口自动化测试中的响应体结果的提取)
-   * Mysql(项目的数据持久化存储)
-   * RabbitMQ(用于辅助Celery异步任务队列功能的消息队列)
-   * requests(发起HTTP请求)
-   * Nginx(Web和反向代理服务器)
+   * [Django](https://docs.djangoproject.com/zh-hans/3.2/) Python Web 框架
+   * [Django REST framework](https://www.django-rest-framework.org/) 基于Django构建restful风格的API
+   * [djangorestframework-simplejwt](https://github.com/jazzband/djangorestframework-simplejwt) 用于Django REST framework的JSON Web令牌身份验证插件
+   * [drf-spectacular](https://github.com/tfranzel/drf-spectacular) 生成在线swagger和redoc形式的API文档
+   * [Celery](https://docs.celeryproject.org/en/stable/) 实现异步任务队列功能
+   * [django-celery-results](https://django-celery-results.readthedocs.io/en/latest/) 使用Django ORM存储Celery任务执行结果 
+   * [django-cors-headers](https://github.com/adamchainz/django-cors-headers) 后端配置CORS解决跨域问题
+   * [django-grappelli](https://django-grappelli.readthedocs.io/en/latest/) Django自带admin后台的主题美化插件
+   * [Gunicorn](https://gunicorn.org/) 用于生产环境部署Django项目的Python WSGI HTTP Server
+   * [jmespath](https://github.com/jmespath/jmespath.py) 用于JSON查询的语言，实现接口自动化测试中的响应体结果的提取
+   * [Mysql](https://www.mysql.com/cn/) 项目数据持久化存储
+   * [RabbitMQ](https://www.rabbitmq.com/) 用于Celery异步任务队列的消息中间件
+   * [Requests](https://docs.python-requests.org/en/master/) 使用Python发起HTTP请求
+   * [Nginx](https://nginx.org/en/) Web和反向代理服务器
+   * [Docker](https://docs.docker.com/) 容器化部署前后端应用
+   * [Docker Compose](https://docs.docker.com/compose/) 容器编排工具，实现一键部署项目
 #### 特别鸣谢以上开源项目，让我得以站在巨人的肩膀上快速构建自己的项目。
 ## 部署(生产环境)
 1. 安装docker和docker-compose和git
@@ -52,15 +54,15 @@
         EMAIL_PORT = 465
         EMAIL_HOST_USER = xxxx@163.com
         # IMAP/SMTP服务 或 POP3/SMTP服务 的密码
-        EMAIL_HOST_PASSWORD = KIBGJJSEXYHPTRVE
+        EMAIL_HOST_PASSWORD = KIBGJJSEXYHPARVE
         # 异步测试任务执行完成后，给任务创建者发送邮件时使用
         # development
         ;FE_TASK_DETAIL_BASEURL = http://localhost:8080/#/tasks/detail/
         # production
-        FE_TASK_DETAIL_BASEURL = http://beer.wenbin.org.cn/#/tasks/detail/
+        FE_TASK_DETAIL_BASEURL = http://部署nginx所在服务器的域名或IP/#/tasks/detail/
         
         [secret_key]
-        SECRET_KEY = v3fe8wwf94y4mo189syst4#2*ge1*8tx)!@*4%%x1$+ts*d^^cg
+        SECRET_KEY = v3fe8wwf94y4mo189syst4#2*ge1*8qx)!@*4%%x1$+ts*d^^cg
         [deploy]
         # development
         ;DEBUG = True
