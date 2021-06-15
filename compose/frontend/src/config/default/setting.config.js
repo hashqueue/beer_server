@@ -33,6 +33,6 @@ module.exports = {
     //页面底部链接，{link: '链接地址', name: '名称/显示文字', icon: '图标，支持 ant design vue 图标库'}
     { link: 'https://www.antdv.com/docs/vue/introduce-cn/', name: 'Ant Design of Vue' },
     { link: 'https://iczer.gitee.io/vue-antd-admin-docs/', name: 'Vue Antd Admin' },
-    { link: 'https://github.com/passerby223/beer-web', name: 'Beer Github' }
+    { link: 'https://github.com/passerby223/beer_server', name: 'Beer Github' }
   ]
 }
