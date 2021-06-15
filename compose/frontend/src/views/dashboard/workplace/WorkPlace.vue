@@ -115,7 +115,7 @@ export default {
       this.updateUserForm.position = res.data.position
       this.updateUserForm.phone = res.data.phone
       this.updateUserForm.groups = res.data.groups
-      if (this.updateUserForm.groups.length === 0 && res.data.is_staff === 0) {
+      if (this.updateUserForm.groups.length === 0 && res.data.is_staff === false) {
         /**
          * 如果用户第一次登入系统需要先完善用户信息
          * @type {boolean}
