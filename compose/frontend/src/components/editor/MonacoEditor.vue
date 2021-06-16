@@ -37,14 +37,10 @@ export default {
   watch: {
     // 监听父组件中的textValue值的变化，用于与编辑器的内容进行双向绑定
     textValue() {
-      if (this.isReadOnly !== true) {
-        this.editor.setValue(this.textValue)
-      }
+      this.editor.setValue(this.textValue)
     },
     editorDivId() {
-      if (this.isReadOnly !== true) {
-        this.editor.setValue(this.textValue)
-      }
+      this.editor.setValue(this.textValue)
     }
   },
   methods: {

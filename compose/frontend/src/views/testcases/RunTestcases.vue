@@ -2,6 +2,7 @@
   <a-modal
     :visible="visible"
     title="运行测试用例"
+    :confirm-loading="loading"
     okText="确定"
     @cancel="
       () => {
@@ -47,6 +48,7 @@ export default {
       showSelect: false,
       configDataList: null,
       checked: false,
+      loading: false,
       validatorTypes: {
         equal_integer: '实际结果(整数类型) 等于 预期结果(整数类型)',
         equal_float: '实际结果(小数类型) 等于 预期结果(小数类型)',
@@ -111,22 +113,28 @@ export default {
         item.response_body = this.conversionResponseNullDataToStringNull(item.response_body)
         item.request_headers = this.conversionResponseNullDataToStringNull(item.request_headers)
         item.response_cookies = this.conversionResponseNullDataToStringNull(item.response_cookies)
-        for (let item1 of item.teststep_validators_results) {
-          // 转化断言类型内容
-          item1['validator_type'] = this.validatorTypes[item1['validator_type']]
-          let result = item1['validator_result']
-          item1['validator_result'] = result['status'] ? '成功' : '失败'
-          item1['actual_value'] =
-            typeof result['actual_value'] !== 'string' ? JSON.stringify(result['actual_value']) : result['actual_value']
-          item1['error'] = result['err'] === null ? '' : result['err']
+        if ('teststep_validators_results' in item) {
+          for (let item1 of item.teststep_validators_results) {
+            // 转化断言类型内容
+            item1['validator_type'] = this.validatorTypes[item1['validator_type']]
+            let result = item1['validator_result']
+            item1['validator_result'] = result['status'] ? '成功' : '失败'
+            item1['actual_value'] =
+              typeof result['actual_value'] !== 'string'
+                ? JSON.stringify(result['actual_value'])
+                : result['actual_value']
+            item1['error'] = result['err'] === null ? '' : result['err']
+          }
         }
       }
       return dataNew
     },
     handleOk() {
+      this.loading = true
       if (this.showSelect) {
         this.form.validateFields((err, values) => {
           if (err) {
+            this.loading = false
             return false
           }
           // 删除无效数据
@@ -146,6 +154,7 @@ export default {
             this.checked = false
             this.showSelect = false
             this.form.resetFields()
+            this.loading = false
             // 关闭弹窗
             this.$emit('cancel', '运行测试用例')
             // 跳转到测试用例运行结果页面
@@ -163,6 +172,7 @@ export default {
           this.checked = false
           this.showSelect = false
           this.form.resetFields()
+          this.loading = false
           this.$emit('cancel', '运行测试用例')
           // 跳转到测试用例运行结果页面
           this.$router.push('run/result')

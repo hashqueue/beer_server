@@ -27,6 +27,16 @@ def send_request(teststep, timeout=120):
     @param timeout:
     @return:
     """
+    if isinstance(teststep.params, str):
+        teststep.params = json.loads(teststep.params)
+    if isinstance(teststep.data, str):
+        teststep.data = json.loads(teststep.data)
+    if isinstance(teststep.headers, str):
+        teststep.headers = json.loads(teststep.headers)
+    if isinstance(teststep.cookies, str):
+        teststep.cookies = json.loads(teststep.cookies)
+    if isinstance(teststep.json, str):
+        teststep.json = json.loads(teststep.json)
     request_data = {"method": teststep.method, "url": teststep.url_path, "params": teststep.params,
                     "data": teststep.data, "headers": teststep.headers, "cookies": teststep.cookies,
                     "json": teststep.json}
