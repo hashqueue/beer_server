@@ -101,35 +101,36 @@ import RunTestcases from '@/views/testcases/RunTestcases'
 const columns = [
   {
     title: 'ID',
-    dataIndex: 'id'
+    dataIndex: 'id',
+    width: 50
   },
   {
     title: '用例名称',
     dataIndex: 'testcase_name',
-    ellipsis: true
-  },
-  {
-    title: '用例描述',
-    dataIndex: 'testcase_desc',
-    ellipsis: true
+    ellipsis: true,
+    width: 300
   },
   {
     title: '所属套件',
     dataIndex: 'testsuite_name',
-    ellipsis: true
+    ellipsis: true,
+    width: 170
   },
   {
-    title: '所属套件ID',
-    dataIndex: 'testsuite'
+    title: '套件ID',
+    dataIndex: 'testsuite',
+    width: 80
   },
   {
     title: '所属项目',
     dataIndex: 'project_name',
-    ellipsis: true
+    ellipsis: true,
+    width: 170
   },
   {
-    title: '所属项目ID',
-    dataIndex: 'project_id'
+    title: '项目ID',
+    dataIndex: 'project_id',
+    width: 80
   },
   {
     title: '创建人',
