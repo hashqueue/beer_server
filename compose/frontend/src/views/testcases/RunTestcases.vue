@@ -145,7 +145,30 @@ export default {
           }
           // console.log(values)
           // 运行测试用例时使用配置
-          runDetailTestcase(this.testcaseId, values).then((res) => {
+          runDetailTestcase(this.testcaseId, values)
+            .then((res) => {
+              let result = this.conversionResponseDataToString(res.data)
+              // 保存运行结果到vuex中
+              this.setTestcaseResult(result)
+              this.$message.success(res.message)
+              // console.log(res.data)
+              this.checked = false
+              this.showSelect = false
+              this.form.resetFields()
+              this.loading = false
+              // 关闭弹窗
+              this.$emit('cancel', '运行测试用例')
+              // 跳转到测试用例运行结果页面
+              this.$router.push('run/result')
+            })
+            .catch(() => {
+              this.loading = false
+            })
+        })
+      } else {
+        // 运行测试用例时不使用配置
+        runDetailTestcase(this.testcaseId)
+          .then((res) => {
             let result = this.conversionResponseDataToString(res.data)
             // 保存运行结果到vuex中
             this.setTestcaseResult(result)
@@ -155,28 +178,13 @@ export default {
             this.showSelect = false
             this.form.resetFields()
             this.loading = false
-            // 关闭弹窗
             this.$emit('cancel', '运行测试用例')
             // 跳转到测试用例运行结果页面
             this.$router.push('run/result')
           })
-        })
-      } else {
-        // 运行测试用例时不使用配置
-        runDetailTestcase(this.testcaseId).then((res) => {
-          let result = this.conversionResponseDataToString(res.data)
-          // 保存运行结果到vuex中
-          this.setTestcaseResult(result)
-          this.$message.success(res.message)
-          // console.log(res.data)
-          this.checked = false
-          this.showSelect = false
-          this.form.resetFields()
-          this.loading = false
-          this.$emit('cancel', '运行测试用例')
-          // 跳转到测试用例运行结果页面
-          this.$router.push('run/result')
-        })
+          .catch(() => {
+            this.loading = false
+          })
       }
     },
     searchWithConfigName(configName) {
