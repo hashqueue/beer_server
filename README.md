@@ -109,10 +109,10 @@
     ```
 7. 此时项目已经部署完毕
     * `前端页面`和`admin管理后台页面`登录时默认的`账户名`是`config.ini`配置文件中的`ADMINS`配置的`管理员账户`。`账户名`使用`邮箱地址`或`用户名`均可以。`密码`默认`admin.191215.*`
-    * 浏览器访问`http://你的服务器域名或IP/`(默认80端口)即可查看项目前端页面
-    * 浏览器访问`http://你的服务器域名或IP/admin/`(默认80端口)即可查看项目admin管理后台页面
-    * 浏览器访问`http://你的服务器域名或IP/api/schema/redoc/`(默认80端口)即可查看项目redoc形式的接口文档
-    * 浏览器访问`http://你的服务器域名或IP/api/schema/swagger-ui/`(默认80端口)即可查看项目swagger形式的接口文档
+    * 浏览器访问`http://服务器域名或IP/`(默认80端口)即可查看项目前端页面
+    * 浏览器访问`http://服务器域名或IP/admin/`(默认80端口)即可查看项目admin管理后台页面
+    * 浏览器访问`http://服务器域名或IP/api/schema/redoc/`(默认80端口)即可查看项目redoc形式的接口文档
+    * 浏览器访问`http://服务器域名或IP/api/schema/swagger-ui/`(默认80端口)即可查看项目swagger形式的接口文档
 ## 开发(测试环境)
 ### 前端开发
 1. `compose/frontend`目录下的代码就是前端本地开发所需要的代码
@@ -131,13 +131,15 @@
     ```
 ### 后端开发
 1. 在`compose/server`目录下的`config.ini`配置文件中修改测试环境所需要的环境配置(`数据库`需要自己手动创建)
-2. 返回到项目`根目录`进行`数据迁移`(会自动在上一步中创建的数据库中创建开发所需要的数据表)
+2. 返回到项目`根目录`安装`项目依赖库`，然后进行`数据迁移`(会自动在上一步中创建的数据库中创建开发所需要的数据表)
     ```bash
     # 返回项目根目录
     cd .../../
+    # 安装项目依赖库
+    pip3 install -i https://pypi.douban.com/simple -U pip && pip3 install -i https://pypi.douban.com/simple -r requirements.txt
     # 创建迁移记录
     python3 manage.py makemigrations
-    # 数据迁移
+    # 数据迁移(创建数据库表)
     python3 manage.py migrate
     ```
 3. 初始化项目管理员账户
