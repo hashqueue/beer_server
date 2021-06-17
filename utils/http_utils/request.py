@@ -159,13 +159,15 @@ def handle_request_data_before_send_request(teststep, config, testcase_variables
                                                     global_variables=global_variables)
             handle_global_or_testcase_variables(teststep=teststep, global_variables=global_variables)
     else:
-        # 未使用配置时，需要判断是否有引用了测试用例级别的变量
-        if testcase_variables != {}:
-            if func_queryset_length == 1:  # 该测试步骤所在的项目下配置了全局函数
+        if func_queryset_length == 1:  # 该测试步骤所在的项目下配置了全局函数
+            # 未使用配置时，需要判断是否有引用了测试用例级别的变量
+            if testcase_variables != {}:
                 # 测试用例变量的优先级>全局变量：测试用例变量会覆盖全局变量
                 handle_global_or_testcase_variables(teststep=teststep, testcase_variables=testcase_variables)
-                handle_global_functions(teststep=teststep, project_id=project_id)
-            else:
+            handle_global_functions(teststep=teststep, project_id=project_id)
+        else:
+            # 未使用配置时，需要判断是否有引用了测试用例级别的变量
+            if testcase_variables != {}:
                 # 测试用例变量的优先级>全局变量：测试用例变量会覆盖全局变量
                 handle_global_or_testcase_variables(teststep=teststep, testcase_variables=testcase_variables)
     # 发送请求时：判断url_path是否符合要求

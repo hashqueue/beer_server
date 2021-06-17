@@ -134,7 +134,8 @@ def regx_functions(content: str, project_id: int = None, is_json: bool = False) 
     need_execute_raw_funcs_list = re.findall(r"\${(\w+\([^)]*\))}", content)
     for raw_func in need_execute_raw_funcs_list:
         data = {}
-        code = 'from global_funcs.func_script_project' + str(
+        code = 'import sys\nsys.modules.pop("global_funcs.func_script_project' + str(
+            project_id) + '", None)\nfrom global_funcs.func_script_project' + str(
             project_id) + ' import *\ncode_execute_result = ' + raw_func
         try:
             exec(code, data)
