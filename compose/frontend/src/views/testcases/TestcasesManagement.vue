@@ -75,6 +75,7 @@
           <a style="margin-left: 8px" @click="runTestcase(record.id, record.project_id)">
             <a-icon type="play-circle" />运行</a
           >
+          <a @click="copyTestcase(record.id)"> <a-icon type="copy" />复制</a>
         </div>
         <template slot="statusTitle">
           <a-icon @click.native="onStatusTitleClick" type="info-circle" />
@@ -271,6 +272,11 @@ export default {
         this.pagination.showTotal = () => `共 ${res.data.count} 条`
         this.loading = false
       })
+    },
+    // 复制单个用例
+    copyTestcase(key) {
+      // 通过命名路由传递需要被复制的用例的用例ID
+      this.$router.push({ name: '复制用例', params: { updateTestcaseId: key } })
     },
     // 编辑单个用例
     editTestcase(key) {

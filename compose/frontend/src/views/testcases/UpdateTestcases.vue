@@ -58,7 +58,7 @@
 
 <script>
 import TeststepForm from '@/views/testcases/TeststepForm'
-import { updateTestcaseDetail, getTestcaseDetail } from '@/services/testcases'
+import { updateTestcaseDetail, getTestcaseDetail, createTestcase } from '@/services/testcases'
 import { getTestSuiteDetail, getTestSuitesDataList } from '@/services/testsuites'
 import EventBus from '@/utils/event-bus'
 
@@ -234,8 +234,20 @@ export default {
               this.testsuiteDataList.push(res2.data)
             })
           }
-          let { id, create_time, update_time, creator, modifier, ...testcaseData } = res.data
-          console.log(`${id},${create_time},${update_time},${creator},${modifier}`)
+          let {
+            id,
+            create_time,
+            update_time,
+            creator,
+            modifier,
+            project_id,
+            project_name,
+            testsuite_name,
+            ...testcaseData
+          } = res.data
+          console.log(
+            `${id},${create_time},${update_time},${creator},${modifier},${project_id},${project_name},${testsuite_name}`
+          )
           this.testcaseForm = testcaseData
           for (let item of this.testcaseForm.teststeps) {
             if (item.json === null) {
@@ -273,36 +285,69 @@ export default {
             }
           }
           // console.log(this.testcaseForm)
-          updateTestcaseDetail(this.updateTestcaseId, this.testcaseForm).then((res) => {
-            this.$message.success(res.message)
-            // 关闭当前标签页
-            EventBus.$emit('closeCurrentPage')
-            // resetFields有BUG,这里手动重置表单
-            this.testcaseForm = {
-              teststeps: [
-                {
-                  step_validators: [],
-                  teststep_name: '',
-                  method: 'GET',
-                  url_path: '',
-                  desc: '',
-                  json: '',
-                  params: [],
-                  data: [],
-                  headers: [],
-                  cookies: [],
-                  export: null,
-                  extract: []
-                }
-              ],
-              testcase_name: '',
-              testcase_desc: '',
-              testsuite: undefined
-            }
-            // 通知用例列表组件刷新用例列表数据
-            EventBus.$emit('refreshTestcasesDataList')
-            this.$router.push('/testcases/list')
-          })
+          if (this.$route.name === '更新用例') {
+            updateTestcaseDetail(this.updateTestcaseId, this.testcaseForm).then((res) => {
+              this.$message.success(res.message)
+              // 关闭当前标签页
+              EventBus.$emit('closeCurrentPage')
+              // resetFields有BUG,这里手动重置表单
+              this.testcaseForm = {
+                teststeps: [
+                  {
+                    step_validators: [],
+                    teststep_name: '',
+                    method: 'GET',
+                    url_path: '',
+                    desc: '',
+                    json: '',
+                    params: [],
+                    data: [],
+                    headers: [],
+                    cookies: [],
+                    export: null,
+                    extract: []
+                  }
+                ],
+                testcase_name: '',
+                testcase_desc: '',
+                testsuite: undefined
+              }
+              // 通知用例列表组件刷新用例列表数据
+              EventBus.$emit('refreshTestcasesDataList')
+              this.$router.push('/testcases/list')
+            })
+          } else if (this.$route.name === '复制用例') {
+            createTestcase(this.testcaseForm).then((res) => {
+              this.$message.success(res.message)
+              // 关闭当前标签页
+              EventBus.$emit('closeCurrentPage')
+              // resetFields有BUG,这里手动重置表单
+              this.testcaseForm = {
+                teststeps: [
+                  {
+                    step_validators: [],
+                    teststep_name: '',
+                    method: 'GET',
+                    url_path: '',
+                    desc: '',
+                    json: '',
+                    params: [],
+                    data: [],
+                    headers: [],
+                    cookies: [],
+                    export: null,
+                    extract: []
+                  }
+                ],
+                testcase_name: '',
+                testcase_desc: '',
+                testsuite: undefined
+              }
+              // 通知用例列表组件刷新用例列表数据
+              EventBus.$emit('refreshTestcasesDataList')
+              this.$router.push('/testcases/list')
+            })
+          }
         } else {
           console.log('error submit!!')
           return false

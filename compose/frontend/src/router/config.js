@@ -173,6 +173,14 @@ const options = {
               component: () => import('@/views/testcases/UpdateTestcases')
             },
             {
+              path: 'copy/:updateTestcaseId',
+              name: '复制用例',
+              meta: {
+                invisible: true
+              },
+              component: () => import('@/views/testcases/UpdateTestcases')
+            },
+            {
               path: 'detail/:detailTestcaseId',
               name: '用例详情',
               meta: {

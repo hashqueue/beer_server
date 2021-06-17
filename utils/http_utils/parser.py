@@ -131,7 +131,7 @@ def regx_functions(content: str, project_id: int = None, is_json: bool = False) 
     @return:
     .strip('${').strip('}')
     """
-    need_execute_raw_funcs_list = re.findall(r"\${(\w+\([^)]*\))}", content)
+    need_execute_raw_funcs_list = list(set(re.findall(r"\${(\w+\([^)]*\))}", content)))
     for raw_func in need_execute_raw_funcs_list:
         data = {}
         code = 'import sys\nsys.modules.pop("global_funcs.func_script_project' + str(
