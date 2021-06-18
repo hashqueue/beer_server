@@ -143,7 +143,7 @@
     # 返回项目根目录
     cd .../../
     # 安装项目依赖库
-    pip3 install -i https://pypi.douban.com/simple -U pip && pip3 install -i https://pypi.douban.com/simple -r requirements.txt
+    pip3 install -i https://pypi.doubanio.com/simple -U pip && pip3 install -i https://pypi.doubanio.com/simple -r requirements.txt
     # 创建迁移记录
     python3 manage.py makemigrations
     # 数据迁移(创建数据库表)
