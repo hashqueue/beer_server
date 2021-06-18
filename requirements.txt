@@ -2,7 +2,7 @@ amqp==5.0.6
 asgiref==3.3.4
 attrs==21.2.0
 billiard==3.6.4.0
-celery==5.1.0
+celery==5.1.1
 certifi==2020.12.5
 chardet==4.0.0
 click==7.1.2
@@ -12,13 +12,13 @@ click-repl==0.1.6
 coreapi==2.3.3
 coreschema==0.0.4
 Django==3.2.4
-django-celery-results==2.0.1
+django-celery-results==2.1.0
 django-cors-headers==3.7.0
 django-filter==2.4.0
 django-grappelli==2.15.1
 djangorestframework==3.12.4
 djangorestframework-simplejwt==4.7.1
-drf-spectacular==0.17.1
+drf-spectacular==0.17.2
 gunicorn==20.1.0
 idna==2.10
 inflection==0.5.1
