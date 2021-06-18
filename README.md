@@ -105,7 +105,14 @@
     backend    /bin/sh -c /bin/bash deplo ...   Up      0.0.0.0:8000->8000/tcp,:::8000->8000/tcp                                                                                              
     mysql      docker-entrypoint.sh --def ...   Up      0.0.0.0:3306->3306/tcp,:::3306->3306/tcp, 33060/tcp                                                                                   
     nginx      /bin/sh -c /bin/bash deplo ...   Up      0.0.0.0:443->443/tcp,:::443->443/tcp, 0.0.0.0:80->80/tcp,:::80->80/tcp                                                                
-    rabbitmq   docker-entrypoint.sh rabbi ...   Up      15671/tcp, 0.0.0.0:15672->15672/tcp,:::15672->15672/tcp, 15691/tcp, 15692/tcp, 25672/tcp, 4369/tcp, 5671/tcp, 0.0.0.0:5672->5672/tcp,:::5672->5672/tcp 
+    rabbitmq   docker-entrypoint.sh rabbi ...   Up      15671/tcp, 0.0.0.0:15672->15672/tcp,:::15672->15672/tcp, 15691/tcp, 15692/tcp, 25672/tcp, 4369/tcp, 5671/tcp, 0.0.0.0:5672->5672/tcp,:::5672->5672/tcp
+    # 删除使用docker-compose构建镜像过程中产生的repository或tag为none的无用镜像文件
+    w@server:~/beer_server# docker images | grep none | awk '{print $3}' | xargs docker rmi
+    Deleted: sha256:18e173792b9d00fb0b0fcaffc2bb9040a4125d87925527ba7ce4d3436ee3bb4c
+    Deleted: sha256:c4935261a16b1048a747ef2791e072e47f90452aa979feff8d695449f26ff6ab
+    Deleted: sha256:5ae67ef04ad1a2ae5b3d866f71fe5a5c6214e8c6f7e728cb12183781d6bf9d68
+    Deleted: sha256:9d948dfd0658ba38a80f26833c492552004191cbd7fad4536bdfb033b4ee21c8
+    Deleted: sha256:6865f17ee8b6b3008df5d9dfb6f2aeba440b7ade88539ba035f57163890c644f
     ```
 7. 此时项目已经部署完毕
     * `前端页面`和`admin管理后台页面`登录时默认的`账户名`是`config.ini`配置文件中的`ADMINS`配置的`管理员账户`。`账户名`使用`邮箱地址`或`用户名`均可以。`密码`默认`admin.191215.*`
