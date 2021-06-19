@@ -1,4 +1,8 @@
 # Beer接口自动化测试平台(单机版项目)
+## 预览
+[用户文档](https://passerby223.github.io/beer_server/)
+
+![用例列表](caselist.png)
 ## 使用到的技术栈
 ### 前端
    * [Vue.js](https://cn.vuejs.org/v2/guide/) JavaScript框架
@@ -179,3 +183,7 @@
 8. 后端在线接口文档(启动开发服务器后)
     * 浏览器访问 [http://127.0.0.1:8000/api/schema/redoc/](http://127.0.0.1:8000/api/schema/redoc/) 查看`redoc`格式的接口文档
     * 浏览器访问 [http://127.0.0.1:8000/api/schema/swagger-ui/](http://127.0.0.1:8000/api/schema/swagger-ui/) 查看`swagger`格式的接口文档
+9. 用户文档修改后本地进行构建预览
+    ```bash
+    yarn docs:dev
+    ```
