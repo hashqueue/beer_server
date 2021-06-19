@@ -7,10 +7,11 @@
   "author": "passerby223 <1912315910@qq.com>",
   "license": "MIT",
   "scripts": {
-    "docs:dev": "vuepress dev docs",
-    "docs:build": "vuepress build docs"
+    "dev": "vuepress dev docs",
+    "build": "vuepress build docs"
   },
   "devDependencies": {
+    "@vuepress/plugin-medium-zoom": "^1.8.2",
     "vuepress": "^1.8.2"
   }
 }

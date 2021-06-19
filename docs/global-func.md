@@ -4,26 +4,26 @@
 
 全局函数可以在测试用例中引用，具体引用格式为`${全局函数名(参数)}`，比如`${generate_random_number(10)}`会在用例执行时运行该函数，并将测试用例中引用了该全局函数的字段的值 替换为 该函数的返回值，然后再发起接口请求。具体使用详情请查看测试用例管理模块用户文档。
 
-![image-20210620011735740](全局函数管理.assets/image-20210620011735740.png)
+![image-20210620011735740](assets/global-func/image-20210620011735740.png)
 
-![新建全局函数](全局函数管理.assets/create-func.png)
+![新建全局函数](assets/global-func/create-func.png)
 
 ## 编辑全局函数
 
-![image-20210620012310901](全局函数管理.assets/image-20210620012310901.png)
+![image-20210620012310901](assets/global-func/image-20210620012310901.png)
 
 ## 查看全局函数
 
 ### 查看全局函数简略信息
 
-![image-20210620012339696](全局函数管理.assets/image-20210620012339696.png)
+![image-20210620012339696](assets/global-func/image-20210620012339696.png)
 
 ### 查看全局函数详情
 
-![image-20210620012402290](全局函数管理.assets/image-20210620012402290.png)
+![image-20210620012402290](assets/global-func/image-20210620012402290.png)
 
-![全局函数详情](全局函数管理.assets/func-detail.png)
+![全局函数详情](assets/global-func/func-detail.png)
 
 ## 删除全局函数
 
-![image-20210620012546940](全局函数管理.assets/image-20210620012546940.png)
+![image-20210620012546940](assets/global-func/image-20210620012546940.png)
