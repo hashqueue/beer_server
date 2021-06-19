@@ -7,14 +7,15 @@ module.exports = {
         lineNumbers: true
     },
     themeConfig: {
-    sidebar: [
-      ['/', '首页'],
-      ['/user-permission', '用户与权限管理'],
-      ['/global-config', '全局配置管理'],
-      ['/global-func', '全局函数管理'],
-      ['/project', '项目管理'],
-      ['/testsuite', '套件管理'],
-      ['/test-task', '测试任务管理'],
-    ]
-  }
+        lastUpdated: 'Last Updated',
+        sidebar: [
+            ['/', '首页'],
+            ['/user-permission', '用户与权限管理'],
+            ['/global-config', '全局配置管理'],
+            ['/global-func', '全局函数管理'],
+            ['/project', '项目管理'],
+            ['/testsuite', '套件管理'],
+            ['/test-task', '测试任务管理'],
+        ]
+    }
 }

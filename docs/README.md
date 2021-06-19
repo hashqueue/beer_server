@@ -1,6 +1,6 @@
 # Beer接口自动化测试平台(单机版项目)
 ## 预览
-![用例列表](../caselist.png)
+![用例列表](../user-documentation-imgs/caselist.png)
 ## 使用到的技术栈
 ### 前端
    * [Vue.js](https://cn.vuejs.org/v2/guide/) JavaScript框架

@@ -2,7 +2,7 @@
 ## 预览
 [用户文档](https://passerby223.github.io/beer_server/)
 
-![用例列表](caselist.png)
+![用例列表](user-documentation-imgs/caselist.png)
 ## 使用到的技术栈
 ### 前端
    * [Vue.js](https://cn.vuejs.org/v2/guide/) JavaScript框架
