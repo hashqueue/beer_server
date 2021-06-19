@@ -57,6 +57,7 @@ class TestCaseSerializer(BaseModelSerializer):
         instance.testcase_name = validated_data.get('testcase_name', instance.testcase_name)
         instance.testcase_desc = validated_data.get('testcase_desc', instance.testcase_desc)
         instance.testsuite = validated_data.get('testsuite', instance.testsuite)
+        instance.modifier = validated_data.get('modifier', instance.modifier)
         instance.save()
         # 删除原有的测试步骤的数据
         for origin_teststep in origin_teststeps:
