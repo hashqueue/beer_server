@@ -23,3 +23,5 @@
 ## 运行项目
 
 ![image-20210620010531175](../user-documentation-imgs/project/image-20210620010531175.png)
+### 邮件通知
+![测试报告](../user-documentation-imgs/project/test-report.png)

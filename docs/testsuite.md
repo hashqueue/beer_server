@@ -30,5 +30,7 @@
 
 ![image-20210620013144879](../user-documentation-imgs/testsuite/image-20210620013144879.png)
 
+### 邮件通知
+![测试报告](../user-documentation-imgs/project/test-report.png)
 
 
