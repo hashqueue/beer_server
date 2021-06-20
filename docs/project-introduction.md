@@ -5,6 +5,7 @@
 ![项目架构图](../user-documentation-imgs/architecture-diagram.png)
 ## 代码目录结构
 ### 前端代码目录结构
+前端代码位于项目根目录下的`compose/frontend/`目录下
 ```bash
 (venv) w@w-Vulcan-Series:~$ tree -I "node_modules" -L 2
 .
@@ -48,6 +49,7 @@
 14 directories, 14 files
 ```
 ### 后端代码目录结构
+后端代码位于项目根目录下
 ```bash
 (venv) w@w-Vulcan-Series:~$ tree -I "venv|migrations|__pycache__|node_modules" -L 2
 .
