@@ -20,6 +20,9 @@ class IsObjectCreatorOrModifierInRequestUserGroups(permissions.BasePermission):
         @param obj:
         @return:
         """
+        # 演示环境禁止删除数据
+        if request.method == 'DELETE':
+            return False
         users_list = []
         current_login_user_groups = request.user.groups.all()
         for group_obj in current_login_user_groups:

@@ -41,6 +41,9 @@
               @click="submitLoginForm('loginRuleFormRef')"
               >登录</a-button
             >
+            <div style="margin-top: 20px">演示环境禁用了所有账户的`数据删除权限`</div>
+            <div style="margin-top: 8px">管理员账号：anonymous密码：python.8000.*</div>
+            <div style="margin-top: 8px">普通用户账号：username1密码：username1</div>
           </a-form-model>
         </a-tab-pane>
         <a-tab-pane tab="注册" key="2">
