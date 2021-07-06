@@ -7,7 +7,6 @@ node_modules
 # Byte-compiled / optimized / DLL files
 __pycache__/
 global_funcs/func_script_project*
-00*.py
 .idea
 *.py[cod]
 *$py.class
