@@ -1,6 +1,6 @@
 # Beer接口自动化测试平台(单机版项目)
 ## 预览
-[用户文档](https://passerby223.github.io/beer_server/)
+[用户文档](https://blog.wenbin.org.cn/beer_server/)
 
 ![用例列表](user-documentation-imgs/caselist.png)
 ## 使用到的技术栈
