@@ -1,9 +1,11 @@
 from drf_spectacular.utils import extend_schema
 from rest_framework import permissions
 from django_celery_results.models import TaskResult
+from rest_framework import status
 
 from .serializers import TaskSerializer
 from utils.drf_utils.custom_model_view_set import MyListRetrieveDestroyModelViewSet
+from utils.drf_utils.custom_json_response import enveloper, JsonResponse
 
 
 # Create your views here.
@@ -31,3 +33,76 @@ class TasksViewSet(MyListRetrieveDestroyModelViewSet):
                 queryset = queryset | TaskResult.objects.filter(task_kwargs__contains=user).order_by('-id')
             # print(queryset)
             return queryset
+
+    @extend_schema(responses=enveloper(TaskSerializer, True))
+    def list(self, request, *args, **kwargs):
+        """
+        获取测试任务列表
+
+        `响应体数据格式以下方示例为准`
+        ```json
+        # 当响应状态码为200时(response_code = 200)
+        {
+          "code": 20000,
+          "message": "success",
+          "data": {
+            "count": 16,
+            "next": "http://127.0.0.1:8000/api/tasks/?page=2&size=1",
+            "previous": null,
+            "results": [
+              {
+                "id": 0,
+                "date_created": "2019-08-24T14:15:22Z",
+                "date_done": "2019-08-24T14:15:22Z",
+                "task_id": "string",
+                "task_name": "string",
+                "task_args": "string",
+                "task_kwargs": "string",
+                "status": "FAILURE",
+                "worker": "string",
+                "content_type": "string",
+                "content_encoding": "string",
+                "result": "string",
+                "traceback": "string",
+                "meta": "string"
+              },
+              {
+                "id": 0,
+                "date_created": "2019-08-24T14:15:22Z",
+                "date_done": "2019-08-24T14:15:22Z",
+                "task_id": "string",
+                "task_name": "string",
+                "task_args": "string",
+                "task_kwargs": "string",
+                "status": "FAILURE",
+                "worker": "string",
+                "content_type": "string",
+                "content_encoding": "string",
+                "result": "string",
+                "traceback": "string",
+                "meta": "string"
+              },
+            ],
+            "total_pages": 16,
+            "current_page": 1
+          }
+        }
+        ```
+        """
+        res = super().list(request, *args, **kwargs)
+        return JsonResponse(data=res.data, msg='success', code=20000)
+
+    @extend_schema(responses=enveloper(TaskSerializer, False))
+    def retrieve(self, request, *args, **kwargs):
+        """
+        查看测试任务详情
+        """
+        res = super().retrieve(request, *args, **kwargs)
+        return JsonResponse(data=res.data, msg='success', code=20000, status=status.HTTP_200_OK)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        删除测试任务
+        """
+        return super().destroy(request, *args, **kwargs)
+

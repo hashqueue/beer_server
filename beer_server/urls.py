@@ -39,3 +39,6 @@ urlpatterns = [
 # 用户媒体文件只在debug模式下生效
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# 自定义 500服务器错误 响应体数据结构
+handler500 = 'utils.drf_utils.custom_server_error_500_handler.server_error'

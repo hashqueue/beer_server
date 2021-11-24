@@ -18,7 +18,7 @@
       <div :class="['admin-header-right', headerTheme]">
         <!--        <header-search class="header-item" @active="(val) => (searchActive = val)" />-->
         <a-tooltip class="header-item" title="帮助文档" placement="bottom">
-          <a href="https://passerby223.github.io/beer_server/" target="_blank">
+          <a href="https://blog.wenbin.org.cn/beer_server/" target="_blank">
             <a-icon type="question-circle-o" />
           </a>
         </a-tooltip>

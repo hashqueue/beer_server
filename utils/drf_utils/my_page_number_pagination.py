@@ -5,8 +5,7 @@
 # @Software: PyCharm
 # @Description:
 from rest_framework.pagination import PageNumberPagination
-from .custom_json_response import JsonResponse
-from rest_framework import status
+from rest_framework.response import Response
 
 
 class MyPageNumberPagination(PageNumberPagination):
@@ -29,5 +28,14 @@ class MyPageNumberPagination(PageNumberPagination):
         # 调用父类中的get_paginated_response()方法获得dict类型返回值，再进行定制
         response = super().get_paginated_response(data)
         response.data['total_pages'] = self.page.paginator.num_pages
-        response.data['current_page_num'] = self.page.number
-        return JsonResponse(data=response.data, code=20000, msg='success', status=status.HTTP_200_OK)
+        response.data['current_page'] = self.page.number
+        return Response(response.data)
+
+    def get_paginated_response_schema(self, schema):
+        """
+        接口文档schema
+        """
+        schema_data = super().get_paginated_response_schema(schema)
+        schema_data['properties']['total_pages'] = {'type': 'integer', 'example': 13}
+        schema_data['properties']['current_page'] = {'type': 'integer', 'example': 1}
+        return schema_data
